@@ -75,8 +75,6 @@ clean_workspace() {
     rm -f dev.db
     rm -f test.db
     
-    # Clean Docker images (legacy cleanup)
-    docker image prune -f >/dev/null 2>&1 || log "WARN" "Docker cleanup failed or Docker not available"
     
     log "SUCCESS" "Workspace cleaned"
 }
@@ -205,33 +203,6 @@ build_application() {
     fi
 }
 
-# Build Docker image (legacy approach)
-build_docker_image() {
-    log "INFO" "Building Docker image..."
-    
-    # Check if Docker is available
-    if ! command -v docker &> /dev/null; then
-        log "WARN" "Docker not available, skipping image build"
-        return 0
-    fi
-    
-    # Build image using Gradle plugin
-    ./gradlew bootBuildImage --imageName="realworld-app:${BUILD_VERSION}"
-    
-    if [ $? -eq 0 ]; then
-        log "SUCCESS" "Docker image built: realworld-app:${BUILD_VERSION}"
-        
-        # Tag as latest if this is master branch
-        if [ "$GIT_BRANCH" = "master" ] || [ "$GIT_BRANCH" = "origin/master" ]; then
-            docker tag "realworld-app:${BUILD_VERSION}" "realworld-app:latest"
-            log "INFO" "Tagged as latest"
-        fi
-    else
-        log "ERROR" "Docker image build failed"
-        # Don't fail the build for Docker issues in legacy setups
-        log "WARN" "Continuing build without Docker image"
-    fi
-}
 
 # Generate reports
 generate_reports() {
@@ -289,7 +260,6 @@ EOF
         <tr><td>Unit Tests</td><td class="success">✓ Passed</td></tr>
         <tr><td>Security Checks</td><td class="success">✓ Passed</td></tr>
         <tr><td>Application Build</td><td class="success">✓ Passed</td></tr>
-        <tr><td>Docker Image</td><td class="success">✓ Passed</td></tr>
     </table>
     
     <h2>Artifacts</h2>
@@ -338,7 +308,6 @@ main() {
     run_unit_tests
     security_checks
     build_application
-    build_docker_image
     generate_reports
     
     local end_time=$(date +%s)

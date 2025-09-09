@@ -391,8 +391,6 @@ JOB_NAME=${JOB_NAME}
     post {
         always {
             script {
-                // Clean up Docker images
-                sh 'docker image prune -f || true'
                 
                 // Archive build logs
                 archiveArtifacts artifacts: 'build/reports/**/*', allowEmptyArchive: true

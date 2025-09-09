@@ -116,7 +116,6 @@ ARTIFACTORY_URL=https://artifacts.company.com/artifactory
 # Agent should have:
 - Java 11 JDK
 - Gradle (or use wrapper)
-- Docker (for image builds)
 - Cloud Foundry CLI
 - Git
 - curl (for health checks)
@@ -265,7 +264,7 @@ This Jenkins setup maintains compatibility with:
 - **API keys encrypted** and rotated regularly  
 - **Access logs** maintained for audit trails
 - **Dependency scanning** integrated into pipeline
-- **Container scanning** for Docker images
+- **Container scanning** for security vulnerabilities
 - **Network security** groups configured
 
 ## Migration Path

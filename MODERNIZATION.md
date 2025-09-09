@@ -19,9 +19,9 @@
 - [ ] OpenShift deployment integration
 
 ### 2. Containerization
-- [ ] Multi-stage Dockerfile
+- [ ] Container strategy design
 - [ ] OpenShift-compatible base images
-- [ ] Health check endpoints
+- [ ] Health check endpoints  
 - [ ] Container security scanning
 
 ### 3. Helm Charts
