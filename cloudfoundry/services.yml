@@ -1,0 +1,34 @@
+# Cloud Foundry services configuration
+services:
+  - name: realworld-postgres-db
+    service: elephantsql
+    plan: turtle
+    tags:
+      - postgresql
+      - relational
+    
+  - name: realworld-redis-cache
+    service: rediscloud
+    plan: 30mb
+    tags:
+      - redis
+      - cache
+      
+  - name: realworld-logs
+    service: papertrail
+    plan: choklad
+    tags:
+      - logging
+      
+# Alternative services for different environments
+development:
+  services:
+    - name: realworld-postgres-dev
+      service: postgresql
+      plan: shared-postgres
+      
+production:
+  services:
+    - name: realworld-postgres-prod
+      service: postgresql  
+      plan: standard-0

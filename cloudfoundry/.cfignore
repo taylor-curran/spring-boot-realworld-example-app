@@ -1,0 +1,51 @@
+# Git and version control
+.git/
+.gitignore
+
+# Build system
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+build/
+!build/libs/*.jar
+
+# Source code (not needed for deployment)
+src/
+
+# Documentation and images
+*.md
+*.png
+*.jpg
+*.gif
+example-logo.png
+graphql-schema.png
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local database
+*.db
+dev.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Node modules (if any)
+node_modules/
+
+# Test results
+test-results/
