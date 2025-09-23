@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id "com.netflix.dgs.codegen" version "5.0.6"
     id "com.diffplug.spotless" version "6.2.1"
+    id 'jacoco'
 }
 
 version = '0.0.1-SNAPSHOT'
@@ -58,7 +59,68 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+    
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                // Auto-generated GraphQL types
+                'io/spring/graphql/types/**',
+                // Generated DGS code
+                'io/spring/graphql/generated/**',
+                // Configuration classes
+                'io/spring/*Config.class',
+                'io/spring/RealWorldApplication.class',
+                // Lombok generated methods
+                '**/*$*'
+            ])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                'io/spring/graphql/types/**',
+                'io/spring/graphql/generated/**',
+                'io/spring/*Config.class',
+                'io/spring/RealWorldApplication.class',
+                '**/*$*'
+            ])
+        }))
+    }
+    
+    violationRules {
+        rule {
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = 0.99
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.95
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 
 tasks.named('generateJava') {
