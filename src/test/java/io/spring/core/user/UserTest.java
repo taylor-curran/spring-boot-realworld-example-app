@@ -207,4 +207,69 @@ public class UserTest {
     assertThat(user1.equals(user2), is(false));
     assertThat(user1.hashCode() == user2.hashCode(), is(false));
   }
+
+  @Test
+  public void should_handle_equals_with_null() {
+    User user = new User("test@example.com", "testuser", "password123", "bio", "image.jpg");
+    
+    assertThat(user.equals(null), is(false));
+  }
+
+  @Test
+  public void should_handle_equals_with_different_class() {
+    User user = new User("test@example.com", "testuser", "password123", "bio", "image.jpg");
+    String notAUser = "not a user";
+    
+    assertThat(user.equals(notAUser), is(false));
+  }
+
+  @Test
+  public void should_handle_equals_with_same_instance() {
+    User user = new User("test@example.com", "testuser", "password123", "bio", "image.jpg");
+    
+    assertThat(user.equals(user), is(true));
+  }
+
+  @Test
+  public void should_handle_equals_with_different_ids() {
+    User user1 = new User("test@example.com", "testuser", "password123", "bio", "image.jpg");
+    User user2 = new User("test@example.com", "testuser", "password123", "bio", "image.jpg");
+    
+    assertThat(user1.getId().equals(user2.getId()), is(false));
+    assertThat(user1.equals(user2), is(false));
+  }
+
+  @Test
+  public void should_handle_equals_with_null_fields() {
+    User user1 = new User("test@example.com", "testuser", "password123", null, null);
+    User user2 = new User("test@example.com", "testuser", "password123", null, null);
+    
+    assertThat(user1.equals(user2), is(false));
+  }
+
+  @Test
+  public void should_handle_hashcode_consistency() {
+    User user = new User("test@example.com", "testuser", "password123", "bio", "image.jpg");
+    
+    int hashCode1 = user.hashCode();
+    int hashCode2 = user.hashCode();
+    
+    assertThat(hashCode1, is(hashCode2));
+  }
+
+  @Test
+  public void should_handle_hashcode_with_null_fields() {
+    User user = new User("test@example.com", "testuser", "password123", null, null);
+    
+    int hashCode = user.hashCode();
+    assertThat(hashCode, notNullValue());
+  }
+
+  @Test
+  public void should_handle_equals_with_mixed_null_fields() {
+    User user1 = new User("test@example.com", "testuser", "password123", "bio", null);
+    User user2 = new User("test@example.com", "testuser", "password123", null, "image.jpg");
+    
+    assertThat(user1.equals(user2), is(false));
+  }
 }
