@@ -69,6 +69,40 @@ jacocoTestReport {
 		html.required = true
 		csv.required = false
 	}
+	
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				// Auto-generated GraphQL DgsConstants
+				'io/spring/graphql/**/DgsConstants*',
+				// Main application class
+				'io/spring/RealWorldApplication.class'
+			])
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	dependsOn jacocoTestReport
+	
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+				'io/spring/graphql/**/DgsConstants*',
+				'io/spring/RealWorldApplication.class'
+			])
+		}))
+	}
+	
+	violationRules {
+		rule {
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.99
+			}
+		}
+	}
 }
 
 
