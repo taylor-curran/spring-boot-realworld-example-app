@@ -150,4 +150,129 @@ class CommentDataTest {
 
         assertEquals(htmlBody, commentData.getBody());
     }
+
+    @Test
+    void shouldImplementEqualsCorrectly() {
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+
+        CommentData comment1 = new CommentData("id", "body", "article-id", now, now, profileData);
+        CommentData comment2 = new CommentData("id", "body", "article-id", now, now, profileData);
+        CommentData comment3 = new CommentData("different-id", "body", "article-id", now, now, profileData);
+
+        assertEquals(comment1, comment2);
+        assertEquals(comment1, comment1);
+        assertNotEquals(comment1, comment3);
+        assertNotEquals(comment1, null);
+        assertNotEquals(comment1, "not a CommentData");
+    }
+
+    @Test
+    void shouldImplementEqualsWithNullFields() {
+        CommentData comment1 = new CommentData(null, null, null, null, null, null);
+        CommentData comment2 = new CommentData(null, null, null, null, null, null);
+        CommentData comment3 = new CommentData("id", null, null, null, null, null);
+
+        assertEquals(comment1, comment2);
+        assertNotEquals(comment1, comment3);
+    }
+
+    @Test
+    void shouldImplementEqualsWithDifferentFields() {
+        DateTime now = DateTime.now();
+        DateTime later = now.plusHours(1);
+        ProfileData profile1 = new ProfileData("profile1", "author1", "bio", "image", false);
+        ProfileData profile2 = new ProfileData("profile2", "author2", "bio", "image", false);
+
+        CommentData baseComment = new CommentData("id", "body", "article-id", now, now, profile1);
+
+        CommentData differentBody = new CommentData("id", "different-body", "article-id", now, now, profile1);
+        CommentData differentArticle = new CommentData("id", "body", "different-article", now, now, profile1);
+        CommentData differentCreated = new CommentData("id", "body", "article-id", later, now, profile1);
+        CommentData differentUpdated = new CommentData("id", "body", "article-id", now, later, profile1);
+        CommentData differentProfile = new CommentData("id", "body", "article-id", now, now, profile2);
+
+        assertNotEquals(baseComment, differentBody);
+        assertNotEquals(baseComment, differentArticle);
+        assertNotEquals(baseComment, differentCreated);
+        assertNotEquals(baseComment, differentUpdated);
+        assertNotEquals(baseComment, differentProfile);
+    }
+
+    @Test
+    void shouldImplementHashCodeCorrectly() {
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+
+        CommentData comment1 = new CommentData("id", "body", "article-id", now, now, profileData);
+        CommentData comment2 = new CommentData("id", "body", "article-id", now, now, profileData);
+
+        assertEquals(comment1.hashCode(), comment2.hashCode());
+    }
+
+    @Test
+    void shouldImplementHashCodeWithNullFields() {
+        CommentData comment1 = new CommentData(null, null, null, null, null, null);
+        CommentData comment2 = new CommentData(null, null, null, null, null, null);
+
+        assertEquals(comment1.hashCode(), comment2.hashCode());
+    }
+
+    @Test
+    void shouldImplementToStringCorrectly() {
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+
+        CommentData commentData = new CommentData("id", "body", "article-id", now, now, profileData);
+        String toString = commentData.toString();
+
+        assertTrue(toString.contains("CommentData"));
+        assertTrue(toString.contains("id=id"));
+        assertTrue(toString.contains("body=body"));
+        assertTrue(toString.contains("articleId=article-id"));
+    }
+
+    @Test
+    void shouldImplementToStringWithNullFields() {
+        CommentData commentData = new CommentData(null, null, null, null, null, null);
+        String toString = commentData.toString();
+
+        assertTrue(toString.contains("CommentData"));
+        assertTrue(toString.contains("id=null"));
+        assertTrue(toString.contains("body=null"));
+        assertTrue(toString.contains("articleId=null"));
+    }
+
+    @Test
+    void shouldCreateCommentDataWithDefaultConstructor() {
+        CommentData commentData = new CommentData();
+
+        assertNull(commentData.getId());
+        assertNull(commentData.getBody());
+        assertNull(commentData.getArticleId());
+        assertNull(commentData.getCreatedAt());
+        assertNull(commentData.getUpdatedAt());
+        assertNull(commentData.getProfileData());
+    }
+
+    @Test
+    void shouldSetFieldsUsingSetters() {
+        CommentData commentData = new CommentData();
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+
+        commentData.setId("new-id");
+        commentData.setBody("new-body");
+        commentData.setArticleId("new-article-id");
+        commentData.setCreatedAt(now);
+        commentData.setUpdatedAt(now);
+        commentData.setProfileData(profileData);
+
+        assertEquals("new-id", commentData.getId());
+        assertEquals("new-body", commentData.getBody());
+        assertEquals("new-article-id", commentData.getArticleId());
+        assertEquals(now, commentData.getCreatedAt());
+        assertEquals(now, commentData.getUpdatedAt());
+        assertEquals(profileData, commentData.getProfileData());
+    }
 }

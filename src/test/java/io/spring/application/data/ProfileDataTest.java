@@ -112,4 +112,112 @@ class ProfileDataTest {
 
         assertEquals(uuidId, profileData.getId());
     }
+
+    @Test
+    void shouldImplementEqualsCorrectly() {
+        ProfileData profile1 = new ProfileData("id", "username", "bio", "image.jpg", true);
+        ProfileData profile2 = new ProfileData("id", "username", "bio", "image.jpg", true);
+        ProfileData profile3 = new ProfileData("different-id", "username", "bio", "image.jpg", true);
+
+        assertEquals(profile1, profile2);
+        assertEquals(profile1, profile1);
+        assertNotEquals(profile1, profile3);
+        assertNotEquals(profile1, null);
+        assertNotEquals(profile1, "not a ProfileData");
+    }
+
+    @Test
+    void shouldImplementEqualsWithNullFields() {
+        ProfileData profile1 = new ProfileData(null, null, null, null, false);
+        ProfileData profile2 = new ProfileData(null, null, null, null, false);
+        ProfileData profile3 = new ProfileData("id", null, null, null, false);
+
+        assertEquals(profile1, profile2);
+        assertNotEquals(profile1, profile3);
+    }
+
+    @Test
+    void shouldImplementEqualsWithDifferentFields() {
+        ProfileData baseProfile = new ProfileData("id", "username", "bio", "image.jpg", true);
+
+        ProfileData differentUsername = new ProfileData("id", "different-username", "bio", "image.jpg", true);
+        ProfileData differentBio = new ProfileData("id", "username", "different-bio", "image.jpg", true);
+        ProfileData differentImage = new ProfileData("id", "username", "bio", "different-image.jpg", true);
+        ProfileData differentFollowing = new ProfileData("id", "username", "bio", "image.jpg", false);
+
+        assertNotEquals(baseProfile, differentUsername);
+        assertNotEquals(baseProfile, differentBio);
+        assertNotEquals(baseProfile, differentImage);
+        assertNotEquals(baseProfile, differentFollowing);
+    }
+
+    @Test
+    void shouldImplementHashCodeCorrectly() {
+        ProfileData profile1 = new ProfileData("id", "username", "bio", "image.jpg", true);
+        ProfileData profile2 = new ProfileData("id", "username", "bio", "image.jpg", true);
+
+        assertEquals(profile1.hashCode(), profile2.hashCode());
+    }
+
+    @Test
+    void shouldImplementHashCodeWithNullFields() {
+        ProfileData profile1 = new ProfileData(null, null, null, null, false);
+        ProfileData profile2 = new ProfileData(null, null, null, null, false);
+
+        assertEquals(profile1.hashCode(), profile2.hashCode());
+    }
+
+    @Test
+    void shouldImplementToStringCorrectly() {
+        ProfileData profileData = new ProfileData("id", "username", "bio", "image.jpg", true);
+        String toString = profileData.toString();
+
+        assertTrue(toString.contains("ProfileData"));
+        assertTrue(toString.contains("id=id"));
+        assertTrue(toString.contains("username=username"));
+        assertTrue(toString.contains("bio=bio"));
+        assertTrue(toString.contains("image=image.jpg"));
+        assertTrue(toString.contains("following=true"));
+    }
+
+    @Test
+    void shouldImplementToStringWithNullFields() {
+        ProfileData profileData = new ProfileData(null, null, null, null, false);
+        String toString = profileData.toString();
+
+        assertTrue(toString.contains("ProfileData"));
+        assertTrue(toString.contains("id=null"));
+        assertTrue(toString.contains("username=null"));
+        assertTrue(toString.contains("bio=null"));
+        assertTrue(toString.contains("image=null"));
+        assertTrue(toString.contains("following=false"));
+    }
+
+    @Test
+    void shouldCreateProfileDataWithDefaultConstructor() {
+        ProfileData profileData = new ProfileData();
+
+        assertNull(profileData.getId());
+        assertNull(profileData.getUsername());
+        assertNull(profileData.getBio());
+        assertNull(profileData.getImage());
+        assertFalse(profileData.isFollowing());
+    }
+
+    @Test
+    void shouldSetFieldsUsingSetters() {
+        ProfileData profileData = new ProfileData();
+
+        profileData.setId("new-id");
+        profileData.setUsername("new-username");
+        profileData.setBio("new-bio");
+        profileData.setImage("new-image.jpg");
+        profileData.setFollowing(true);
+
+        assertEquals("new-id", profileData.getId());
+        assertEquals("new-username", profileData.getUsername());
+        assertEquals("new-bio", profileData.getBio());
+        assertEquals("new-image.jpg", profileData.getImage());
+        assertTrue(profileData.isFollowing());
+    }
 }

@@ -151,4 +151,162 @@ class ArticleDataTest {
         assertEquals(titleWithSpecialChars, articleData.getTitle());
         assertEquals(bodyWithUnicode, articleData.getBody());
     }
+
+    @Test
+    void shouldImplementEqualsCorrectly() {
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image.jpg", false);
+        List<String> tagList = Arrays.asList("tag1", "tag2");
+
+        ArticleData article1 = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tagList, profileData);
+        ArticleData article2 = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tagList, profileData);
+        ArticleData article3 = new ArticleData("different-id", "slug", "title", "desc", "body", true, 5, now, now, tagList, profileData);
+
+        assertEquals(article1, article2);
+        assertEquals(article1, article1);
+        assertNotEquals(article1, article3);
+        assertNotEquals(article1, null);
+        assertNotEquals(article1, "not an ArticleData");
+    }
+
+    @Test
+    void shouldImplementEqualsWithNullFields() {
+        ArticleData article1 = new ArticleData(null, null, null, null, null, false, 0, null, null, null, null);
+        ArticleData article2 = new ArticleData(null, null, null, null, null, false, 0, null, null, null, null);
+        ArticleData article3 = new ArticleData("id", null, null, null, null, false, 0, null, null, null, null);
+
+        assertEquals(article1, article2);
+        assertNotEquals(article1, article3);
+    }
+
+    @Test
+    void shouldImplementEqualsWithDifferentFields() {
+        DateTime now = DateTime.now();
+        DateTime later = now.plusHours(1);
+        ProfileData profile1 = new ProfileData("profile1", "author1", "bio", "image", false);
+        ProfileData profile2 = new ProfileData("profile2", "author2", "bio", "image", false);
+        List<String> tags1 = Arrays.asList("tag1");
+        List<String> tags2 = Arrays.asList("tag2");
+
+        ArticleData baseArticle = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags1, profile1);
+
+        ArticleData differentSlug = new ArticleData("id", "different-slug", "title", "desc", "body", true, 5, now, now, tags1, profile1);
+        ArticleData differentTitle = new ArticleData("id", "slug", "different-title", "desc", "body", true, 5, now, now, tags1, profile1);
+        ArticleData differentDescription = new ArticleData("id", "slug", "title", "different-desc", "body", true, 5, now, now, tags1, profile1);
+        ArticleData differentBody = new ArticleData("id", "slug", "title", "desc", "different-body", true, 5, now, now, tags1, profile1);
+        ArticleData differentFavorited = new ArticleData("id", "slug", "title", "desc", "body", false, 5, now, now, tags1, profile1);
+        ArticleData differentCount = new ArticleData("id", "slug", "title", "desc", "body", true, 10, now, now, tags1, profile1);
+        ArticleData differentCreated = new ArticleData("id", "slug", "title", "desc", "body", true, 5, later, now, tags1, profile1);
+        ArticleData differentUpdated = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, later, tags1, profile1);
+        ArticleData differentTags = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags2, profile1);
+        ArticleData differentProfile = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags1, profile2);
+
+        assertNotEquals(baseArticle, differentSlug);
+        assertNotEquals(baseArticle, differentTitle);
+        assertNotEquals(baseArticle, differentDescription);
+        assertNotEquals(baseArticle, differentBody);
+        assertNotEquals(baseArticle, differentFavorited);
+        assertNotEquals(baseArticle, differentCount);
+        assertNotEquals(baseArticle, differentCreated);
+        assertNotEquals(baseArticle, differentUpdated);
+        assertNotEquals(baseArticle, differentTags);
+        assertNotEquals(baseArticle, differentProfile);
+    }
+
+    @Test
+    void shouldImplementHashCodeCorrectly() {
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+        List<String> tagList = Arrays.asList("tag1", "tag2");
+
+        ArticleData article1 = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tagList, profileData);
+        ArticleData article2 = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tagList, profileData);
+
+        assertEquals(article1.hashCode(), article2.hashCode());
+    }
+
+    @Test
+    void shouldImplementHashCodeWithNullFields() {
+        ArticleData article1 = new ArticleData(null, null, null, null, null, false, 0, null, null, null, null);
+        ArticleData article2 = new ArticleData(null, null, null, null, null, false, 0, null, null, null, null);
+
+        assertEquals(article1.hashCode(), article2.hashCode());
+    }
+
+    @Test
+    void shouldImplementToStringCorrectly() {
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+        List<String> tagList = Arrays.asList("tag1", "tag2");
+
+        ArticleData articleData = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tagList, profileData);
+        String toString = articleData.toString();
+
+        assertTrue(toString.contains("ArticleData"));
+        assertTrue(toString.contains("id=id"));
+        assertTrue(toString.contains("slug=slug"));
+        assertTrue(toString.contains("title=title"));
+        assertTrue(toString.contains("favorited=true"));
+        assertTrue(toString.contains("favoritesCount=5"));
+    }
+
+    @Test
+    void shouldImplementToStringWithNullFields() {
+        ArticleData articleData = new ArticleData(null, null, null, null, null, false, 0, null, null, null, null);
+        String toString = articleData.toString();
+
+        assertTrue(toString.contains("ArticleData"));
+        assertTrue(toString.contains("id=null"));
+        assertTrue(toString.contains("favorited=false"));
+        assertTrue(toString.contains("favoritesCount=0"));
+    }
+
+    @Test
+    void shouldCreateArticleDataWithDefaultConstructor() {
+        ArticleData articleData = new ArticleData();
+
+        assertNull(articleData.getId());
+        assertNull(articleData.getSlug());
+        assertNull(articleData.getTitle());
+        assertNull(articleData.getDescription());
+        assertNull(articleData.getBody());
+        assertFalse(articleData.isFavorited());
+        assertEquals(0, articleData.getFavoritesCount());
+        assertNull(articleData.getCreatedAt());
+        assertNull(articleData.getUpdatedAt());
+        assertNull(articleData.getTagList());
+        assertNull(articleData.getProfileData());
+    }
+
+    @Test
+    void shouldSetFieldsUsingSetters() {
+        ArticleData articleData = new ArticleData();
+        DateTime now = DateTime.now();
+        ProfileData profileData = new ProfileData("profile-id", "author", "bio", "image", false);
+        List<String> tagList = Arrays.asList("tag1", "tag2");
+
+        articleData.setId("new-id");
+        articleData.setSlug("new-slug");
+        articleData.setTitle("new-title");
+        articleData.setDescription("new-description");
+        articleData.setBody("new-body");
+        articleData.setFavorited(true);
+        articleData.setFavoritesCount(10);
+        articleData.setCreatedAt(now);
+        articleData.setUpdatedAt(now);
+        articleData.setTagList(tagList);
+        articleData.setProfileData(profileData);
+
+        assertEquals("new-id", articleData.getId());
+        assertEquals("new-slug", articleData.getSlug());
+        assertEquals("new-title", articleData.getTitle());
+        assertEquals("new-description", articleData.getDescription());
+        assertEquals("new-body", articleData.getBody());
+        assertTrue(articleData.isFavorited());
+        assertEquals(10, articleData.getFavoritesCount());
+        assertEquals(now, articleData.getCreatedAt());
+        assertEquals(now, articleData.getUpdatedAt());
+        assertEquals(tagList, articleData.getTagList());
+        assertEquals(profileData, articleData.getProfileData());
+    }
 }
