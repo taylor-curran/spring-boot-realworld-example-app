@@ -79,7 +79,7 @@ public class UserMutationTest {
         .password("password123")
         .build();
     
-    ConstraintViolationException exception = new ConstraintViolationException("Validation failed", null);
+    ConstraintViolationException exception = new ConstraintViolationException("Validation failed", java.util.Collections.emptySet());
     when(userService.createUser(any(RegisterParam.class))).thenThrow(exception);
 
     DataFetcherResult<UserResult> result = userMutation.createUser(input);
