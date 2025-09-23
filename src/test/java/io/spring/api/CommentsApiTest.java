@@ -118,7 +118,7 @@ public class CommentsApiTest extends TestWithCurrentUser {
 
   @Test
   public void should_get_comments_of_article_success() throws Exception {
-    when(commentQueryService.findByArticleId(anyString(), eq(null)))
+    when(commentQueryService.findByArticleId(eq(article.getId()), eq(null)))
         .thenReturn(Arrays.asList(commentData));
     RestAssuredMockMvc.when()
         .get("/articles/{slug}/comments", article.getSlug())
@@ -161,5 +161,67 @@ public class CommentsApiTest extends TestWithCurrentUser {
         .delete("/articles/{slug}/comments/{id}", article.getSlug(), comment.getId())
         .then()
         .statusCode(403);
+  }
+
+  @Test
+  public void should_get_404_when_article_not_found_for_create_comment() throws Exception {
+    when(articleRepository.findBySlug(eq("nonexistent-slug"))).thenReturn(Optional.empty());
+
+    Map<String, Object> param =
+        new HashMap<String, Object>() {
+          {
+            put(
+                "comment",
+                new HashMap<String, Object>() {
+                  {
+                    put("body", "comment content");
+                  }
+                });
+          }
+        };
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Token " + token)
+        .body(param)
+        .when()
+        .post("/articles/{slug}/comments", "nonexistent-slug")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_404_when_article_not_found_for_get_comments() throws Exception {
+    when(articleRepository.findBySlug(eq("nonexistent-slug"))).thenReturn(Optional.empty());
+
+    RestAssuredMockMvc.when()
+        .get("/articles/{slug}/comments", "nonexistent-slug")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_404_when_article_not_found_for_delete_comment() throws Exception {
+    when(articleRepository.findBySlug(eq("nonexistent-slug"))).thenReturn(Optional.empty());
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .delete("/articles/{slug}/comments/{id}", "nonexistent-slug", comment.getId())
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_404_when_comment_not_found_for_delete() throws Exception {
+    when(commentRepository.findById(eq(article.getId()), eq("nonexistent-comment")))
+        .thenReturn(Optional.empty());
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .delete("/articles/{slug}/comments/{id}", article.getSlug(), "nonexistent-comment")
+        .then()
+        .statusCode(404);
   }
 }
