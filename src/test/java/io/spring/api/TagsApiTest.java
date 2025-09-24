@@ -1,6 +1,5 @@
 package io.spring.api;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.when;
 
@@ -54,11 +53,7 @@ public class TagsApiTest extends TestWithCurrentUser {
     List<String> emptyTags = Collections.emptyList();
     when(tagsQueryService.allTags()).thenReturn(emptyTags);
 
-    RestAssuredMockMvc.when()
-        .get("/tags")
-        .then()
-        .statusCode(200)
-        .body("tags.size()", equalTo(0));
+    RestAssuredMockMvc.when().get("/tags").then().statusCode(200).body("tags.size()", equalTo(0));
   }
 
   @Test

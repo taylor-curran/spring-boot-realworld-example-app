@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import graphql.execution.DataFetcherResult;
@@ -16,9 +16,13 @@ import io.spring.application.DateTimeCursor;
 import io.spring.application.data.ArticleData;
 import io.spring.application.data.CommentData;
 import io.spring.core.user.User;
-import io.spring.graphql.SecurityUtil;
 import io.spring.graphql.types.Article;
 import io.spring.graphql.types.CommentsConnection;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,17 +31,10 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 @ExtendWith(MockitoExtension.class)
 public class CommentDatafetcherSimpleTest {
 
-  @Mock
-  private CommentQueryService commentQueryService;
+  @Mock private CommentQueryService commentQueryService;
 
   private CommentDatafetcher commentDatafetcher;
   private User testUser;
@@ -53,7 +50,7 @@ public class CommentDatafetcherSimpleTest {
     DgsDataFetchingEnvironment dfe = mock(DgsDataFetchingEnvironment.class);
     Article article = Article.newBuilder().slug("article-slug").build();
     when(dfe.getSource()).thenReturn(article);
-    
+
     Map<String, ArticleData> localContext = new HashMap<>();
     ArticleData articleData = mock(ArticleData.class);
     when(articleData.getId()).thenReturn("article1");
@@ -71,13 +68,14 @@ public class CommentDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(true);
 
     when(commentQueryService.findByArticleIdWithCursor(
-        eq("article1"), any(User.class), any(CursorPageParameter.class)))
+            eq("article1"), any(User.class), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dfe);
+      DataFetcherResult<CommentsConnection> result =
+          commentDatafetcher.articleComments(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -85,7 +83,8 @@ public class CommentDatafetcherSimpleTest {
       assertThat(result.getData().getEdges().get(0).getNode().getId()).isEqualTo("comment1");
       assertThat(result.getData().getEdges().get(1).getNode().getId()).isEqualTo("comment2");
       assertThat(result.getData().getPageInfo().isHasNextPage()).isTrue();
-      assertThat((Map<String, Object>) result.getLocalContext()).containsKeys("comment1", "comment2");
+      assertThat((Map<String, Object>) result.getLocalContext())
+          .containsKeys("comment1", "comment2");
     }
   }
 
@@ -94,7 +93,7 @@ public class CommentDatafetcherSimpleTest {
     DgsDataFetchingEnvironment dfe = mock(DgsDataFetchingEnvironment.class);
     Article article = Article.newBuilder().slug("article-slug").build();
     when(dfe.getSource()).thenReturn(article);
-    
+
     Map<String, ArticleData> localContext = new HashMap<>();
     ArticleData articleData = mock(ArticleData.class);
     when(articleData.getId()).thenReturn("article1");
@@ -111,13 +110,14 @@ public class CommentDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(commentQueryService.findByArticleIdWithCursor(
-        eq("article1"), eq(null), any(CursorPageParameter.class)))
+            eq("article1"), eq(null), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.empty());
 
-      DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dfe);
+      DataFetcherResult<CommentsConnection> result =
+          commentDatafetcher.articleComments(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -132,7 +132,7 @@ public class CommentDatafetcherSimpleTest {
     DgsDataFetchingEnvironment dfe = mock(DgsDataFetchingEnvironment.class);
     Article article = Article.newBuilder().slug("article-slug").build();
     when(dfe.getSource()).thenReturn(article);
-    
+
     Map<String, ArticleData> localContext = new HashMap<>();
     ArticleData articleData = mock(ArticleData.class);
     when(articleData.getId()).thenReturn("article1");
@@ -147,13 +147,14 @@ public class CommentDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(commentQueryService.findByArticleIdWithCursor(
-        eq("article1"), any(User.class), any(CursorPageParameter.class)))
+            eq("article1"), any(User.class), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(null, null, 10, "1234567890", dfe);
+      DataFetcherResult<CommentsConnection> result =
+          commentDatafetcher.articleComments(null, null, 10, "1234567890", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();

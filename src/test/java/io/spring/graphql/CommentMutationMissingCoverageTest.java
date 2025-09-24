@@ -19,7 +19,6 @@ import io.spring.core.comment.CommentRepository;
 import io.spring.core.service.AuthorizationService;
 import io.spring.core.user.User;
 import io.spring.graphql.exception.AuthenticationException;
-import io.spring.graphql.types.CommentPayload;
 import io.spring.graphql.types.DeletionStatus;
 import java.util.Arrays;
 import java.util.Optional;
@@ -43,7 +42,8 @@ public class CommentMutationMissingCoverageTest {
 
   @BeforeEach
   void setUp() {
-    commentMutation = new CommentMutation(articleRepository, commentRepository, commentQueryService);
+    commentMutation =
+        new CommentMutation(articleRepository, commentRepository, commentQueryService);
   }
 
   @Test
@@ -65,9 +65,16 @@ public class CommentMutationMissingCoverageTest {
       User currentUser = new User("user@example.com", "testuser", "123", "", "");
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
 
-      Article article = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), currentUser.getId());
+      Article article =
+          new Article(
+              "Test Title",
+              "Test Description",
+              "Test Body",
+              Arrays.asList("tag1"),
+              currentUser.getId());
       when(articleRepository.findBySlug("test-slug")).thenReturn(Optional.of(article));
-      when(commentRepository.findById(article.getId(), "non-existent-comment")).thenReturn(Optional.empty());
+      when(commentRepository.findById(article.getId(), "non-existent-comment"))
+          .thenReturn(Optional.empty());
 
       assertThatThrownBy(() -> commentMutation.removeComment("test-slug", "non-existent-comment"))
           .isInstanceOf(ResourceNotFoundException.class);
@@ -77,18 +84,28 @@ public class CommentMutationMissingCoverageTest {
   @Test
   void should_handle_deleteComment_when_user_not_authorized() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class);
-         MockedStatic<AuthorizationService> authServiceMock = Mockito.mockStatic(AuthorizationService.class)) {
-      
+        MockedStatic<AuthorizationService> authServiceMock =
+            Mockito.mockStatic(AuthorizationService.class)) {
+
       User currentUser = new User("user@example.com", "testuser", "123", "", "");
       User commentAuthor = new User("other@example.com", "otheruser", "456", "", "");
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
 
-      Article article = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), commentAuthor.getId());
+      Article article =
+          new Article(
+              "Test Title",
+              "Test Description",
+              "Test Body",
+              Arrays.asList("tag1"),
+              commentAuthor.getId());
       Comment existingComment = new Comment("Test comment", commentAuthor.getId(), article.getId());
-      
+
       when(articleRepository.findBySlug("test-slug")).thenReturn(Optional.of(article));
-      when(commentRepository.findById(article.getId(), "comment-id")).thenReturn(Optional.of(existingComment));
-      authServiceMock.when(() -> AuthorizationService.canWriteComment(currentUser, article, existingComment)).thenReturn(false);
+      when(commentRepository.findById(article.getId(), "comment-id"))
+          .thenReturn(Optional.of(existingComment));
+      authServiceMock
+          .when(() -> AuthorizationService.canWriteComment(currentUser, article, existingComment))
+          .thenReturn(false);
 
       assertThatThrownBy(() -> commentMutation.removeComment("test-slug", "comment-id"))
           .isInstanceOf(NoAuthorizationException.class);
@@ -101,26 +118,34 @@ public class CommentMutationMissingCoverageTest {
       User currentUser = new User("user@example.com", "testuser", "123", "", "");
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
 
-      Article article = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), currentUser.getId());
+      Article article =
+          new Article(
+              "Test Title",
+              "Test Description",
+              "Test Body",
+              Arrays.asList("tag1"),
+              currentUser.getId());
       when(articleRepository.findBySlug("test-slug")).thenReturn(Optional.of(article));
 
       Comment savedComment = new Comment("Test comment", currentUser.getId(), article.getId());
       doNothing().when(commentRepository).save(any(Comment.class));
 
-      ProfileData profileData = new ProfileData(
-          currentUser.getId(),
-          currentUser.getUsername(),
-          currentUser.getBio(),
-          currentUser.getImage(),
-          false);
+      ProfileData profileData =
+          new ProfileData(
+              currentUser.getId(),
+              currentUser.getUsername(),
+              currentUser.getBio(),
+              currentUser.getImage(),
+              false);
 
-      CommentData commentData = new CommentData(
-          savedComment.getId(),
-          savedComment.getBody(),
-          savedComment.getArticleId(),
-          DateTime.now(),
-          DateTime.now(),
-          profileData);
+      CommentData commentData =
+          new CommentData(
+              savedComment.getId(),
+              savedComment.getBody(),
+              savedComment.getArticleId(),
+              DateTime.now(),
+              DateTime.now(),
+              profileData);
 
       when(commentQueryService.findById(any(String.class), eq(currentUser)))
           .thenReturn(Optional.of(commentData));
@@ -135,17 +160,27 @@ public class CommentMutationMissingCoverageTest {
   @Test
   void should_handle_deleteComment_successful_path() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class);
-         MockedStatic<AuthorizationService> authServiceMock = Mockito.mockStatic(AuthorizationService.class)) {
-      
+        MockedStatic<AuthorizationService> authServiceMock =
+            Mockito.mockStatic(AuthorizationService.class)) {
+
       User currentUser = new User("user@example.com", "testuser", "123", "", "");
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
 
-      Article article = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), currentUser.getId());
+      Article article =
+          new Article(
+              "Test Title",
+              "Test Description",
+              "Test Body",
+              Arrays.asList("tag1"),
+              currentUser.getId());
       Comment existingComment = new Comment("Test comment", currentUser.getId(), article.getId());
-      
+
       when(articleRepository.findBySlug("test-slug")).thenReturn(Optional.of(article));
-      when(commentRepository.findById(article.getId(), "comment-id")).thenReturn(Optional.of(existingComment));
-      authServiceMock.when(() -> AuthorizationService.canWriteComment(currentUser, article, existingComment)).thenReturn(true);
+      when(commentRepository.findById(article.getId(), "comment-id"))
+          .thenReturn(Optional.of(existingComment));
+      authServiceMock
+          .when(() -> AuthorizationService.canWriteComment(currentUser, article, existingComment))
+          .thenReturn(true);
       doNothing().when(commentRepository).remove(existingComment);
 
       DeletionStatus result = commentMutation.removeComment("test-slug", "comment-id");

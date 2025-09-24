@@ -2,7 +2,6 @@ package io.spring.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,44 +29,42 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @ExtendWith(MockitoExtension.class)
 public class MeDatafetcherTest {
 
-  @Mock
-  private UserQueryService userQueryService;
+  @Mock private UserQueryService userQueryService;
 
-  @Mock
-  private JwtService jwtService;
+  @Mock private JwtService jwtService;
 
-  @InjectMocks
-  private MeDatafetcher meDatafetcher;
+  @InjectMocks private MeDatafetcher meDatafetcher;
 
-  @Mock
-  private DataFetchingEnvironment dataFetchingEnvironment;
+  @Mock private DataFetchingEnvironment dataFetchingEnvironment;
 
-  @Mock
-  private SecurityContext securityContext;
+  @Mock private SecurityContext securityContext;
 
-  @Mock
-  private Authentication authentication;
+  @Mock private Authentication authentication;
 
   private io.spring.core.user.User testUser;
   private UserData testUserData;
 
   @BeforeEach
   public void setUp() {
-    testUser = new io.spring.core.user.User("test@example.com", "testuser", "password", "bio", "image.jpg");
+    testUser =
+        new io.spring.core.user.User(
+            "test@example.com", "testuser", "password", "bio", "image.jpg");
     testUserData = new UserData("user123", "test@example.com", "testuser", "bio", "image.jpg");
   }
 
   @Test
   public void should_return_me_with_valid_authentication() {
     String authorization = "Bearer validtoken123";
-    
+
     when(authentication.getPrincipal()).thenReturn(testUser);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(userQueryService.findById(testUser.getId())).thenReturn(Optional.of(testUserData));
 
-    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = 
-         Mockito.mockStatic(SecurityContextHolder.class)) {
-      mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder =
+        Mockito.mockStatic(SecurityContextHolder.class)) {
+      mockedSecurityContextHolder
+          .when(SecurityContextHolder::getContext)
+          .thenReturn(securityContext);
 
       DataFetcherResult<User> result = meDatafetcher.getMe(authorization, dataFetchingEnvironment);
 
@@ -84,12 +81,14 @@ public class MeDatafetcherTest {
   public void should_return_null_for_anonymous_authentication() {
     String authorization = "Bearer token123";
     AnonymousAuthenticationToken anonymousAuth = mock(AnonymousAuthenticationToken.class);
-    
+
     when(securityContext.getAuthentication()).thenReturn(anonymousAuth);
 
-    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = 
-         Mockito.mockStatic(SecurityContextHolder.class)) {
-      mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder =
+        Mockito.mockStatic(SecurityContextHolder.class)) {
+      mockedSecurityContextHolder
+          .when(SecurityContextHolder::getContext)
+          .thenReturn(securityContext);
 
       DataFetcherResult<User> result = meDatafetcher.getMe(authorization, dataFetchingEnvironment);
 
@@ -100,13 +99,15 @@ public class MeDatafetcherTest {
   @Test
   public void should_return_null_for_null_principal() {
     String authorization = "Bearer token123";
-    
+
     when(authentication.getPrincipal()).thenReturn(null);
     when(securityContext.getAuthentication()).thenReturn(authentication);
 
-    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = 
-         Mockito.mockStatic(SecurityContextHolder.class)) {
-      mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder =
+        Mockito.mockStatic(SecurityContextHolder.class)) {
+      mockedSecurityContextHolder
+          .when(SecurityContextHolder::getContext)
+          .thenReturn(securityContext);
 
       DataFetcherResult<User> result = meDatafetcher.getMe(authorization, dataFetchingEnvironment);
 
@@ -117,14 +118,16 @@ public class MeDatafetcherTest {
   @Test
   public void should_throw_exception_when_user_not_found() {
     String authorization = "Bearer validtoken123";
-    
+
     when(authentication.getPrincipal()).thenReturn(testUser);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(userQueryService.findById(testUser.getId())).thenReturn(Optional.empty());
 
-    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = 
-         Mockito.mockStatic(SecurityContextHolder.class)) {
-      mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder =
+        Mockito.mockStatic(SecurityContextHolder.class)) {
+      mockedSecurityContextHolder
+          .when(SecurityContextHolder::getContext)
+          .thenReturn(securityContext);
 
       assertThatThrownBy(() -> meDatafetcher.getMe(authorization, dataFetchingEnvironment))
           .isInstanceOf(ResourceNotFoundException.class);
@@ -134,14 +137,16 @@ public class MeDatafetcherTest {
   @Test
   public void should_handle_authorization_header_with_bearer_prefix() {
     String authorization = "Bearer token-with-special-chars_123";
-    
+
     when(authentication.getPrincipal()).thenReturn(testUser);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(userQueryService.findById(testUser.getId())).thenReturn(Optional.of(testUserData));
 
-    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = 
-         Mockito.mockStatic(SecurityContextHolder.class)) {
-      mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder =
+        Mockito.mockStatic(SecurityContextHolder.class)) {
+      mockedSecurityContextHolder
+          .when(SecurityContextHolder::getContext)
+          .thenReturn(securityContext);
 
       DataFetcherResult<User> result = meDatafetcher.getMe(authorization, dataFetchingEnvironment);
 
@@ -169,14 +174,17 @@ public class MeDatafetcherTest {
     io.spring.core.user.User userWithEmptyFields = new io.spring.core.user.User("", "", "", "", "");
     UserData userDataWithEmptyFields = new UserData("user123", "", "", "", "");
     String authorization = "Bearer token123";
-    
+
     when(authentication.getPrincipal()).thenReturn(userWithEmptyFields);
     when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(userQueryService.findById(userWithEmptyFields.getId())).thenReturn(Optional.of(userDataWithEmptyFields));
+    when(userQueryService.findById(userWithEmptyFields.getId()))
+        .thenReturn(Optional.of(userDataWithEmptyFields));
 
-    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder = 
-         Mockito.mockStatic(SecurityContextHolder.class)) {
-      mockedSecurityContextHolder.when(SecurityContextHolder::getContext).thenReturn(securityContext);
+    try (MockedStatic<SecurityContextHolder> mockedSecurityContextHolder =
+        Mockito.mockStatic(SecurityContextHolder.class)) {
+      mockedSecurityContextHolder
+          .when(SecurityContextHolder::getContext)
+          .thenReturn(securityContext);
 
       DataFetcherResult<User> result = meDatafetcher.getMe(authorization, dataFetchingEnvironment);
 

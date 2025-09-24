@@ -3,13 +3,9 @@ package io.spring.graphql;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mockStatic;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import graphql.execution.DataFetcherResult;
@@ -18,13 +14,14 @@ import io.spring.application.ArticleQueryService;
 import io.spring.application.CursorPageParameter;
 import io.spring.application.CursorPager;
 import io.spring.application.CursorPager.Direction;
-import io.spring.application.DateTimeCursor;
 import io.spring.application.data.ArticleData;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
 import io.spring.graphql.types.Article;
 import io.spring.graphql.types.ArticlesConnection;
 import io.spring.graphql.types.Profile;
+import java.util.Arrays;
+import java.util.Optional;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,17 +34,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class ArticleDatafetcherTest {
 
-  @Mock
-  private ArticleQueryService articleQueryService;
+  @Mock private ArticleQueryService articleQueryService;
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private DgsDataFetchingEnvironment dfe;
+  @Mock private DgsDataFetchingEnvironment dfe;
 
-  @InjectMocks
-  private ArticleDatafetcher articleDatafetcher;
+  @InjectMocks private ArticleDatafetcher articleDatafetcher;
 
   private User testUser;
   private ArticleData testArticleData;
@@ -56,17 +49,26 @@ public class ArticleDatafetcherTest {
   @BeforeEach
   public void setUp() {
     testUser = new User("test@example.com", "testuser", "password", "bio", "image.jpg");
-    testArticleData = new ArticleData(
-        "article-id", "test-slug", "Test Title", "Test Description", "Test Body",
-        false, 0, DateTime.now(), DateTime.now(), Arrays.asList("java", "spring"),
-        null
-    );
-    testProfile = Profile.newBuilder()
-        .username("testuser")
-        .bio("bio")
-        .image("image.jpg")
-        .following(false)
-        .build();
+    testArticleData =
+        new ArticleData(
+            "article-id",
+            "test-slug",
+            "Test Title",
+            "Test Description",
+            "Test Body",
+            false,
+            0,
+            DateTime.now(),
+            DateTime.now(),
+            Arrays.asList("java", "spring"),
+            null);
+    testProfile =
+        Profile.newBuilder()
+            .username("testuser")
+            .bio("bio")
+            .image("image.jpg")
+            .following(false)
+            .build();
   }
 
   @Test
@@ -78,17 +80,20 @@ public class ArticleDatafetcherTest {
 
     when(dfe.getSource()).thenReturn(testProfile);
     when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-    
-    CursorPager<ArticleData> pager = new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
+
+    CursorPager<ArticleData> pager =
+        new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
     when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
         .thenReturn(pager);
 
-    DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(first, after, last, before, dfe);
+    DataFetcherResult<ArticlesConnection> result =
+        articleDatafetcher.userFeed(first, after, last, before, dfe);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isNotNull();
     assertThat(result.getData().getEdges()).hasSize(1);
-    verify(articleQueryService).findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
+    verify(articleQueryService)
+        .findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
   }
 
   @Test
@@ -116,19 +121,24 @@ public class ArticleDatafetcherTest {
     String before = null;
 
     when(dfe.getSource()).thenReturn(testProfile);
-    
-    CursorPager<ArticleData> pager = new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
-    when(articleQueryService.findRecentArticlesWithCursor(eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any()))
+
+    CursorPager<ArticleData> pager =
+        new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
+    when(articleQueryService.findRecentArticlesWithCursor(
+            eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any()))
         .thenReturn(pager);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(first, after, last, before, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(first, after, last, before, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData().getEdges()).hasSize(1);
-      verify(articleQueryService).findRecentArticlesWithCursor(eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), eq(testUser));
+      verify(articleQueryService)
+          .findRecentArticlesWithCursor(
+              eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), eq(testUser));
     }
   }
 
@@ -140,19 +150,24 @@ public class ArticleDatafetcherTest {
     String before = null;
 
     when(dfe.getSource()).thenReturn(testProfile);
-    
-    CursorPager<ArticleData> pager = new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
-    when(articleQueryService.findRecentArticlesWithCursor(eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), any()))
+
+    CursorPager<ArticleData> pager =
+        new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
+    when(articleQueryService.findRecentArticlesWithCursor(
+            eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), any()))
         .thenReturn(pager);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(first, after, last, before, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userArticles(first, after, last, before, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData().getEdges()).hasSize(1);
-      verify(articleQueryService).findRecentArticlesWithCursor(eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), eq(testUser));
+      verify(articleQueryService)
+          .findRecentArticlesWithCursor(
+              eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), eq(testUser));
     }
   }
 
@@ -166,18 +181,28 @@ public class ArticleDatafetcherTest {
     String favoritedBy = "favuser";
     String withTag = "java";
 
-    CursorPager<ArticleData> pager = new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
-    when(articleQueryService.findRecentArticlesWithCursor(eq(withTag), eq(authoredBy), eq(favoritedBy), any(CursorPageParameter.class), any()))
+    CursorPager<ArticleData> pager =
+        new CursorPager<>(Arrays.asList(testArticleData), Direction.NEXT, false);
+    when(articleQueryService.findRecentArticlesWithCursor(
+            eq(withTag), eq(authoredBy), eq(favoritedBy), any(CursorPageParameter.class), any()))
         .thenReturn(pager);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(first, after, last, before, authoredBy, favoritedBy, withTag, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getArticles(
+              first, after, last, before, authoredBy, favoritedBy, withTag, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData().getEdges()).hasSize(1);
-      verify(articleQueryService).findRecentArticlesWithCursor(eq(withTag), eq(authoredBy), eq(favoritedBy), any(CursorPageParameter.class), eq(testUser));
+      verify(articleQueryService)
+          .findRecentArticlesWithCursor(
+              eq(withTag),
+              eq(authoredBy),
+              eq(favoritedBy),
+              any(CursorPageParameter.class),
+              eq(testUser));
     }
   }
 
