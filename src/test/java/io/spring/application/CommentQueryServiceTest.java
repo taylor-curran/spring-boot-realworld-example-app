@@ -174,4 +174,111 @@ class CommentQueryServiceTest {
         assertFalse(result.get(1).getProfileData().isFollowing());
     }
 
+    @Test
+    void shouldFindCommentsByArticleIdWithCursorNext() {
+        String articleId = "article-id";
+        CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(DateTime.now(), 2, Direction.NEXT);
+        List<CommentData> comments = new ArrayList<>(Arrays.asList(testComment, testComment, testComment));
+        Set<String> followingAuthors = Set.of(testProfile.getId());
+
+        when(commentReadService.findByArticleIdWithCursor(articleId, pageParam)).thenReturn(comments);
+        when(userRelationshipQueryService.followingAuthors(eq(testUser.getId()), anyList()))
+            .thenReturn(followingAuthors);
+
+        CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(articleId, testUser, pageParam);
+
+        assertEquals(2, result.getData().size());
+        assertTrue(result.hasNext());
+        assertTrue(result.getData().get(0).getProfileData().isFollowing());
+        verify(commentReadService).findByArticleIdWithCursor(articleId, pageParam);
+        verify(userRelationshipQueryService).followingAuthors(eq(testUser.getId()), anyList());
+    }
+
+    @Test
+    void shouldFindCommentsByArticleIdWithCursorPrev() {
+        String articleId = "article-id";
+        CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(DateTime.now(), 2, Direction.PREV);
+        List<CommentData> comments = new ArrayList<>(Arrays.asList(testComment, testComment));
+
+        when(commentReadService.findByArticleIdWithCursor(articleId, pageParam)).thenReturn(comments);
+
+        CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(articleId, null, pageParam);
+
+        assertEquals(2, result.getData().size());
+        assertFalse(result.hasNext());
+        verify(commentReadService).findByArticleIdWithCursor(articleId, pageParam);
+        verifyNoInteractions(userRelationshipQueryService);
+    }
+
+    @Test
+    void shouldFindCommentsByArticleIdWithCursorEmptyResults() {
+        String articleId = "article-id";
+        CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(DateTime.now(), 10, Direction.NEXT);
+        List<CommentData> emptyComments = new ArrayList<>();
+
+        when(commentReadService.findByArticleIdWithCursor(articleId, pageParam)).thenReturn(emptyComments);
+
+        CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(articleId, testUser, pageParam);
+
+        assertTrue(result.getData().isEmpty());
+        assertFalse(result.hasNext());
+        verify(commentReadService).findByArticleIdWithCursor(articleId, pageParam);
+        verifyNoInteractions(userRelationshipQueryService);
+    }
+
+    @Test
+    void shouldFindCommentsByArticleIdWithCursorWithoutUser() {
+        String articleId = "article-id";
+        CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(DateTime.now(), 5, Direction.NEXT);
+        List<CommentData> comments = new ArrayList<>(Arrays.asList(testComment));
+
+        when(commentReadService.findByArticleIdWithCursor(articleId, pageParam)).thenReturn(comments);
+
+        CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(articleId, null, pageParam);
+
+        assertEquals(1, result.getData().size());
+        assertFalse(result.hasNext());
+        assertFalse(result.getData().get(0).getProfileData().isFollowing());
+        verify(commentReadService).findByArticleIdWithCursor(articleId, pageParam);
+        verifyNoInteractions(userRelationshipQueryService);
+    }
+
+    @Test
+    void shouldReverseCommentsForPrevDirection() {
+        String articleId = "article-id";
+        CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(DateTime.now(), 3, Direction.PREV);
+        
+        DateTime now = DateTime.now();
+        CommentData comment1 = new CommentData("comment1", "body1", "article-id", now, now, testProfile);
+        CommentData comment2 = new CommentData("comment2", "body2", "article-id", now, now, testProfile);
+        List<CommentData> comments = new ArrayList<>(Arrays.asList(comment1, comment2));
+
+        when(commentReadService.findByArticleIdWithCursor(articleId, pageParam)).thenReturn(comments);
+
+        CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(articleId, null, pageParam);
+
+        assertEquals(2, result.getData().size());
+        verify(commentReadService).findByArticleIdWithCursor(articleId, pageParam);
+    }
+
+    @Test
+    void shouldHandleCursorPaginationWithLimitExceeded() {
+        String articleId = "article-id";
+        CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(DateTime.now(), 2, Direction.NEXT);
+        
+        DateTime now = DateTime.now();
+        CommentData comment1 = new CommentData("comment1", "body1", "article-id", now, now, testProfile);
+        CommentData comment2 = new CommentData("comment2", "body2", "article-id", now, now, testProfile);
+        CommentData comment3 = new CommentData("comment3", "body3", "article-id", now, now, testProfile);
+        List<CommentData> comments = new ArrayList<>(Arrays.asList(comment1, comment2, comment3));
+
+        when(commentReadService.findByArticleIdWithCursor(articleId, pageParam)).thenReturn(comments);
+
+        CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(articleId, null, pageParam);
+
+        assertEquals(2, result.getData().size());
+        assertTrue(result.hasNext());
+        verify(commentReadService).findByArticleIdWithCursor(articleId, pageParam);
+    }
+
 }
