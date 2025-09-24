@@ -161,4 +161,5 @@ class UserWithTokenTest {
         assertEquals("email@test.com", userWithToken.getEmail());
         assertEquals("user", userWithToken.getUsername());
     }
+
 }

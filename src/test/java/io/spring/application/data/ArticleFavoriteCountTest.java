@@ -167,4 +167,30 @@ class ArticleFavoriteCountTest {
         assertEquals(favoriteCount1, favoriteCount2);
         assertNotEquals(favoriteCount1, favoriteCount3);
     }
+
+    @Test
+    void shouldCreateArticleFavoriteCountWithDefaultConstructor() {
+        ArticleFavoriteCount favoriteCount = new ArticleFavoriteCount(null, null);
+
+        assertNull(favoriteCount.getId());
+        assertNull(favoriteCount.getCount());
+    }
+
+    @Test
+    void shouldImplementHashCodeWithNullFields() {
+        ArticleFavoriteCount favoriteCount1 = new ArticleFavoriteCount(null, null);
+        ArticleFavoriteCount favoriteCount2 = new ArticleFavoriteCount(null, null);
+
+        assertEquals(favoriteCount1.hashCode(), favoriteCount2.hashCode());
+    }
+
+    @Test
+    void shouldImplementToStringWithNullFields() {
+        ArticleFavoriteCount favoriteCount = new ArticleFavoriteCount(null, null);
+        String toString = favoriteCount.toString();
+
+        assertTrue(toString.contains("ArticleFavoriteCount"));
+        assertTrue(toString.contains("id=null"));
+        assertTrue(toString.contains("count=null"));
+    }
 }

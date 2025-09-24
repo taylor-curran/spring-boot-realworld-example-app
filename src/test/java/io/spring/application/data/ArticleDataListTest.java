@@ -188,4 +188,5 @@ class ArticleDataListTest {
         assertEquals(1, articleDataList.getArticleDatas().size());
         assertNull(articleDataList.getArticleDatas().get(0).getTagList());
     }
+
 }
