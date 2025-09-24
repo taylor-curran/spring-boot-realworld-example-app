@@ -158,4 +158,111 @@ class CursorPageParameterTest {
         assertEquals(10, pageParam.getLimit());
         assertFalse(pageParam.isNext());
     }
+
+    @Test
+    void shouldHandleEqualsAndHashCode() {
+        CursorPageParameter<String> param1 = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        CursorPageParameter<String> param2 = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        CursorPageParameter<String> param3 = new CursorPageParameter<>("different", 10, Direction.NEXT);
+
+        assertEquals(param1, param2);
+        assertEquals(param1.hashCode(), param2.hashCode());
+        assertNotEquals(param1, param3);
+        assertNotEquals(param1.hashCode(), param3.hashCode());
+    }
+
+    @Test
+    void shouldHandleEqualsWithDifferentLimits() {
+        CursorPageParameter<String> param1 = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        CursorPageParameter<String> param2 = new CursorPageParameter<>("cursor", 20, Direction.NEXT);
+
+        assertNotEquals(param1, param2);
+        assertNotEquals(param1.hashCode(), param2.hashCode());
+    }
+
+    @Test
+    void shouldHandleEqualsWithDifferentDirections() {
+        CursorPageParameter<String> param1 = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        CursorPageParameter<String> param2 = new CursorPageParameter<>("cursor", 10, Direction.PREV);
+
+        assertNotEquals(param1, param2);
+        assertNotEquals(param1.hashCode(), param2.hashCode());
+    }
+
+    @Test
+    void shouldHandleEqualsWithNullValues() {
+        CursorPageParameter<String> param1 = new CursorPageParameter<>(null, 10, null);
+        CursorPageParameter<String> param2 = new CursorPageParameter<>(null, 10, null);
+        CursorPageParameter<String> param3 = new CursorPageParameter<>("cursor", 10, null);
+
+        assertEquals(param1, param2);
+        assertEquals(param1.hashCode(), param2.hashCode());
+        assertNotEquals(param1, param3);
+    }
+
+    @Test
+    void shouldNotEqualNull() {
+        CursorPageParameter<String> param = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+
+        assertNotEquals(param, null);
+    }
+
+    @Test
+    void shouldNotEqualDifferentClass() {
+        CursorPageParameter<String> param = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        String notAParam = "not a parameter";
+
+        assertNotEquals(param, notAParam);
+    }
+
+    @Test
+    void shouldEqualSelf() {
+        CursorPageParameter<String> param = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+
+        assertEquals(param, param);
+        assertEquals(param.hashCode(), param.hashCode());
+    }
+
+    @Test
+    void shouldHandleToString() {
+        CursorPageParameter<String> param = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+
+        String toString = param.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("CursorPageParameter"));
+        assertTrue(toString.contains("cursor"));
+        assertTrue(toString.contains("10"));
+        assertTrue(toString.contains("NEXT"));
+    }
+
+    @Test
+    void shouldHandleToStringWithNullValues() {
+        CursorPageParameter<String> param = new CursorPageParameter<>(null, 20, null);
+
+        String toString = param.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("CursorPageParameter"));
+        assertTrue(toString.contains("20"));
+    }
+
+    @Test
+    void shouldHandleToStringWithDefaults() {
+        CursorPageParameter<String> param = new CursorPageParameter<>();
+
+        String toString = param.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("CursorPageParameter"));
+        assertTrue(toString.contains("20"));
+    }
+
+    @Test
+    void shouldHandleCanEqualMethod() {
+        CursorPageParameter<String> param1 = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        CursorPageParameter<String> param2 = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+        String notAParam = "not a parameter";
+
+        assertTrue(param1.equals(param2));
+        assertFalse(param1.equals(notAParam));
+        assertFalse(param1.equals(null));
+    }
 }
