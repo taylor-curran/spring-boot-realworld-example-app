@@ -11,6 +11,13 @@ import org.junit.jupiter.api.Test;
 class AuthorizationServiceTest {
 
     @Test
+    void shouldCreateAuthorizationServiceInstance() {
+        AuthorizationService service = new AuthorizationService();
+        
+        assertNotNull(service);
+    }
+
+    @Test
     void shouldAllowArticleOwnerToWriteArticle() {
         User user = new User("test@example.com", "testuser", "password", "bio", "image.jpg");
         Article article = new Article("Test Title", "Test desc", "Test body", List.of("tag1"), user.getId());
