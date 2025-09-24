@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.execution.DataFetcherResult;
 import io.spring.api.exception.ResourceNotFoundException;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +47,7 @@ class ArticleDatafetcherTest {
     private UserRepository userRepository;
 
     @Mock
-    private DataFetchingEnvironment dgsDataFetchingEnvironment;
+    private DgsDataFetchingEnvironment dgsDataFetchingEnvironment;
 
     @Mock
     private DataFetchingEnvironment dataFetchingEnvironment;
@@ -93,6 +95,11 @@ class ArticleDatafetcherTest {
         
         testArticle = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("java"), "testuser");
         testCommentData = new CommentData("comment1", "Test comment", "article1", DateTime.now(), DateTime.now(), profileData);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
 
@@ -186,5 +193,237 @@ class ArticleDatafetcherTest {
         assertNotNull(result.getData());
         assertEquals("test-slug", result.getData().getSlug());
         verify(articleQueryService).findById(eq(testArticle.getId()), isNull());
+    }
+
+    @Test
+    void shouldGetFeedWithFirstParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        assertEquals("test-slug", result.getData().getEdges().get(0).getNode().getSlug());
+        verify(articleQueryService).findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldGetFeedWithLastParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(null, null, 10, "1672531200000", dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(articleQueryService).findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBothFirstAndLastAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            articleDatafetcher.getFeed(null, null, null, null, dgsDataFetchingEnvironment);
+        });
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBothFirstAndLastAreProvided() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            articleDatafetcher.getFeed(null, null, null, null, dgsDataFetchingEnvironment);
+        });
+    }
+
+    @Test
+    void shouldGetFeedWithNullCurrentUser() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(null);
+        when(articleQueryService.findUserFeedWithCursor(isNull(), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        verify(articleQueryService).findUserFeedWithCursor(isNull(), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldGetUserFeedWithFirstParameter() {
+        Profile profile = Profile.newBuilder().username("testuser").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(userRepository).findByUsername("testuser");
+        verify(articleQueryService).findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFoundInUserFeed() {
+        Profile profile = Profile.newBuilder().username("nonexistent").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+        when(userRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            articleDatafetcher.userFeed(10, null, null, null, dgsDataFetchingEnvironment);
+        });
+    }
+
+    @Test
+    void shouldGetUserFavoritesWithFirstParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        Profile profile = Profile.newBuilder().username("testuser").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+        when(articleQueryService.findRecentArticlesWithCursor(isNull(), isNull(), eq("testuser"), any(CursorPageParameter.class), eq(testUser)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(articleQueryService).findRecentArticlesWithCursor(isNull(), isNull(), eq("testuser"), any(CursorPageParameter.class), eq(testUser));
+    }
+
+    @Test
+    void shouldGetUserFavoritesWithLastParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        Profile profile = Profile.newBuilder().username("testuser").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+        when(articleQueryService.findRecentArticlesWithCursor(isNull(), isNull(), eq("testuser"), any(CursorPageParameter.class), eq(testUser)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(null, null, 10, "1672531200000", dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        verify(articleQueryService).findRecentArticlesWithCursor(isNull(), isNull(), eq("testuser"), any(CursorPageParameter.class), eq(testUser));
+    }
+
+    @Test
+    void shouldGetUserArticlesWithFirstParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        Profile profile = Profile.newBuilder().username("testuser").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+        when(articleQueryService.findRecentArticlesWithCursor(isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), eq(testUser)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(articleQueryService).findRecentArticlesWithCursor(isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), eq(testUser));
+    }
+
+    @Test
+    void shouldGetArticlesWithAllFilters() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        when(articleQueryService.findRecentArticlesWithCursor(eq("java"), eq("author"), eq("favoriter"), any(CursorPageParameter.class), eq(testUser)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(10, null, null, null, "author", "favoriter", "java", dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(articleQueryService).findRecentArticlesWithCursor(eq("java"), eq("author"), eq("favoriter"), any(CursorPageParameter.class), eq(testUser));
+    }
+
+    @Test
+    void shouldGetArticlesWithLastParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        when(articleQueryService.findRecentArticlesWithCursor(isNull(), isNull(), isNull(), any(CursorPageParameter.class), eq(testUser)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(null, null, 10, "1672531200000", null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        verify(articleQueryService).findRecentArticlesWithCursor(isNull(), isNull(), isNull(), any(CursorPageParameter.class), eq(testUser));
+    }
+
+    @Test
+    void shouldHandleEmptyArticlesList() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        CursorPager<ArticleData> emptyCursorPager = new CursorPager<>(
+            Collections.emptyList(),
+            CursorPager.Direction.NEXT,
+            false
+        );
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(emptyCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertTrue(result.getData().getEdges().isEmpty());
+        assertNotNull(result.getData().getPageInfo());
+    }
+
+    @Test
+    void shouldHandleCursorParsing() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, "1672531200000", null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        verify(articleQueryService).findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldBuildCorrectPageInfo() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        CursorPager<ArticleData> pagerWithPagination = new CursorPager<>(
+            Arrays.asList(testArticleData),
+            CursorPager.Direction.NEXT,
+            true
+        );
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(pagerWithPagination);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData().getPageInfo());
+        assertNotNull(result.getData().getPageInfo().getEndCursor());
+    }
+
+    @Test
+    void shouldBuildCorrectLocalContext() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getLocalContext());
+        Map<String, ArticleData> localContext = (Map<String, ArticleData>) result.getLocalContext();
+        assertTrue(localContext.containsKey("test-slug"));
+        assertEquals(testArticleData, localContext.get("test-slug"));
     }
 }

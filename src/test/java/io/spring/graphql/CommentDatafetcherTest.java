@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.execution.DataFetcherResult;
 import io.spring.application.CommentQueryService;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +42,7 @@ class CommentDatafetcherTest {
     private CommentQueryService commentQueryService;
 
     @Mock
-    private DataFetchingEnvironment dgsDataFetchingEnvironment;
+    private DgsDataFetchingEnvironment dgsDataFetchingEnvironment;
 
     @Mock
     private SecurityContext securityContext;
@@ -90,6 +92,11 @@ class CommentDatafetcherTest {
             CursorPager.Direction.NEXT,
             true
         );
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -154,5 +161,247 @@ class CommentDatafetcherTest {
         assertNotNull(result);
         assertTrue(result.getData().isEmpty());
         assertFalse(result.hasNext());
+    }
+
+    @Test
+    void shouldGetCommentFromPayload() {
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(testCommentData);
+
+        DataFetcherResult<Comment> result = commentDatafetcher.getComment(dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals("comment1", result.getData().getId());
+        assertEquals("Test comment body", result.getData().getBody());
+        assertNotNull(result.getLocalContext());
+        Map<String, CommentData> localContext = (Map<String, CommentData>) result.getLocalContext();
+        assertTrue(localContext.containsKey("comment1"));
+        assertEquals(testCommentData, localContext.get("comment1"));
+    }
+
+    @Test
+    void shouldGetArticleCommentsWithFirstParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        assertEquals("comment1", result.getData().getEdges().get(0).getNode().getId());
+        verify(commentQueryService).findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldGetArticleCommentsWithLastParameter() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(null, null, 10, "1672531200000", dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(commentQueryService).findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBothFirstAndLastAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDatafetcher.articleComments(null, null, null, null, dgsDataFetchingEnvironment);
+        });
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBothFirstAndLastAreProvided() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentDatafetcher.articleComments(null, null, null, null, dgsDataFetchingEnvironment);
+        });
+    }
+
+    @Test
+    void shouldGetArticleCommentsWithNullCurrentUser() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(null);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), isNull(), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        verify(commentQueryService).findByArticleIdWithCursor(eq("article1"), isNull(), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldHandleEmptyCommentsList() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        CursorPager<CommentData> emptyCursorPager = new CursorPager<>(
+            Collections.emptyList(),
+            CursorPager.Direction.NEXT,
+            false
+        );
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(emptyCursorPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertTrue(result.getData().getEdges().isEmpty());
+        assertNotNull(result.getData().getPageInfo());
+    }
+
+    @Test
+    void shouldHandleCursorParsing() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, "1672531200000", null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        verify(commentQueryService).findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
+    void shouldBuildCorrectPageInfo() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        CursorPager<CommentData> pagerWithPagination = new CursorPager<>(
+            Arrays.asList(testCommentData),
+            CursorPager.Direction.NEXT,
+            true
+        );
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(pagerWithPagination);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData().getPageInfo());
+        assertNotNull(result.getData().getPageInfo().getEndCursor());
+    }
+
+    @Test
+    void shouldBuildCorrectLocalContext() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(testCursorPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getLocalContext());
+        Map<String, CommentData> localContext = (Map<String, CommentData>) result.getLocalContext();
+        assertTrue(localContext.containsKey("comment1"));
+        assertEquals(testCommentData, localContext.get("comment1"));
+    }
+
+    @Test
+    void shouldHandleMultipleComments() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(testUser);
+        
+        ProfileData profileData = new ProfileData("user2", "testuser2", "Test Bio 2", "avatar2.jpg", false);
+        CommentData secondComment = new CommentData(
+            "comment2",
+            "Second comment body",
+            "article1",
+            DateTime.now(),
+            DateTime.now(),
+            profileData
+        );
+        
+        CursorPager<CommentData> multipleCommentsPager = new CursorPager<>(
+            Arrays.asList(testCommentData, secondComment),
+            CursorPager.Direction.NEXT,
+            false
+        );
+        
+        Article article = Article.newBuilder().slug("test-slug").build();
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(article);
+        
+        Map<String, ArticleData> contextMap = new HashMap<>();
+        contextMap.put("test-slug", testArticleData);
+        when(dgsDataFetchingEnvironment.getLocalContext()).thenReturn(contextMap);
+        
+        when(commentQueryService.findByArticleIdWithCursor(eq("article1"), eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(multipleCommentsPager);
+
+        DataFetcherResult<CommentsConnection> result = commentDatafetcher.articleComments(10, null, null, null, dgsDataFetchingEnvironment);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(2, result.getData().getEdges().size());
+        assertEquals("comment1", result.getData().getEdges().get(0).getNode().getId());
+        assertEquals("comment2", result.getData().getEdges().get(1).getNode().getId());
+        
+        Map<String, CommentData> localContext = (Map<String, CommentData>) result.getLocalContext();
+        assertTrue(localContext.containsKey("comment1"));
+        assertTrue(localContext.containsKey("comment2"));
     }
 }
