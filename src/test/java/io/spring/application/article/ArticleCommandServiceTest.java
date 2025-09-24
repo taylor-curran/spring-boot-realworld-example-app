@@ -19,11 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class ArticleCommandServiceTest {
 
-  @Mock
-  private ArticleRepository articleRepository;
+  @Mock private ArticleRepository articleRepository;
 
-  @InjectMocks
-  private ArticleCommandService articleCommandService;
+  @InjectMocks private ArticleCommandService articleCommandService;
 
   private User testUser;
   private NewArticleParam newArticleParam;
@@ -33,17 +31,24 @@ public class ArticleCommandServiceTest {
   @BeforeEach
   public void setUp() {
     testUser = new User("test@example.com", "testuser", "password", "bio", "image.jpg");
-    
-    newArticleParam = new NewArticleParam(
-        "Test Article Title",
-        "Test description",
-        "Test body content",
-        Arrays.asList("tag1", "tag2")
-    );
-    
-    updateArticleParam = new UpdateArticleParam("Updated Title", "Updated body", "Updated description");
-    
-    testArticle = new Article("Original Title", "Original description", "Original body", Arrays.asList("tag1"), testUser.getId());
+
+    newArticleParam =
+        new NewArticleParam(
+            "Test Article Title",
+            "Test description",
+            "Test body content",
+            Arrays.asList("tag1", "tag2"));
+
+    updateArticleParam =
+        new UpdateArticleParam("Updated Title", "Updated body", "Updated description");
+
+    testArticle =
+        new Article(
+            "Original Title",
+            "Original description",
+            "Original body",
+            Arrays.asList("tag1"),
+            testUser.getId());
   }
 
   @Test
@@ -55,7 +60,7 @@ public class ArticleCommandServiceTest {
     assertThat(result.getDescription()).isEqualTo("Test description");
     assertThat(result.getBody()).isEqualTo("Test body content");
     assertThat(result.getUserId()).isEqualTo(testUser.getId());
-    
+
     verify(articleRepository).save(any(Article.class));
   }
 
@@ -69,12 +74,8 @@ public class ArticleCommandServiceTest {
 
   @Test
   public void should_create_article_with_empty_tags() {
-    NewArticleParam paramWithEmptyTags = new NewArticleParam(
-        "Test Title",
-        "Test description", 
-        "Test body",
-        Collections.emptyList()
-    );
+    NewArticleParam paramWithEmptyTags =
+        new NewArticleParam("Test Title", "Test description", "Test body", Collections.emptyList());
 
     Article result = articleCommandService.createArticle(paramWithEmptyTags, testUser);
 
@@ -84,12 +85,8 @@ public class ArticleCommandServiceTest {
 
   @Test
   public void should_handle_null_tags_gracefully() {
-    NewArticleParam paramWithNullTags = new NewArticleParam(
-        "Test Title",
-        "Test description",
-        "Test body", 
-        null
-    );
+    NewArticleParam paramWithNullTags =
+        new NewArticleParam("Test Title", "Test description", "Test body", null);
 
     try {
       articleCommandService.createArticle(paramWithNullTags, testUser);
@@ -101,12 +98,12 @@ public class ArticleCommandServiceTest {
 
   @Test
   public void should_handle_special_characters_in_title() {
-    NewArticleParam specialParam = new NewArticleParam(
-        "Test Article with Special Characters!@#$%^&*()",
-        "Description with émojis 🚀",
-        "Body with unicode: 测试内容",
-        Arrays.asList("special-tag", "unicode-标签")
-    );
+    NewArticleParam specialParam =
+        new NewArticleParam(
+            "Test Article with Special Characters!@#$%^&*()",
+            "Description with émojis 🚀",
+            "Body with unicode: 测试内容",
+            Arrays.asList("special-tag", "unicode-标签"));
 
     Article result = articleCommandService.createArticle(specialParam, testUser);
 
@@ -122,12 +119,12 @@ public class ArticleCommandServiceTest {
     String longDescription = "Very Long Description ".repeat(20);
     String longBody = "Very Long Body Content ".repeat(100);
 
-    NewArticleParam longParam = new NewArticleParam(
-        longTitle,
-        longDescription,
-        longBody,
-        Arrays.asList("tag1", "tag2", "tag3", "tag4", "tag5")
-    );
+    NewArticleParam longParam =
+        new NewArticleParam(
+            longTitle,
+            longDescription,
+            longBody,
+            Arrays.asList("tag1", "tag2", "tag3", "tag4", "tag5"));
 
     Article result = articleCommandService.createArticle(longParam, testUser);
 
@@ -147,11 +144,9 @@ public class ArticleCommandServiceTest {
 
   @Test
   public void should_update_article_with_all_fields() {
-    UpdateArticleParam fullUpdateParam = new UpdateArticleParam(
-        "Completely New Title",
-        "Completely New Body",
-        "Completely New Description"
-    );
+    UpdateArticleParam fullUpdateParam =
+        new UpdateArticleParam(
+            "Completely New Title", "Completely New Body", "Completely New Description");
 
     articleCommandService.updateArticle(testArticle, fullUpdateParam);
 
@@ -178,11 +173,11 @@ public class ArticleCommandServiceTest {
 
   @Test
   public void should_update_article_with_special_characters() {
-    UpdateArticleParam specialUpdateParam = new UpdateArticleParam(
-        "Updated Title with Special Chars!@#$",
-        "Updated body with émojis 🎉 and unicode: 更新内容",
-        "Updated description with symbols: ©®™"
-    );
+    UpdateArticleParam specialUpdateParam =
+        new UpdateArticleParam(
+            "Updated Title with Special Chars!@#$",
+            "Updated body with émojis 🎉 and unicode: 更新内容",
+            "Updated description with symbols: ©®™");
 
     articleCommandService.updateArticle(testArticle, specialUpdateParam);
 

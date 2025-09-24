@@ -17,23 +17,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class UserQueryServiceTest {
 
-  @Mock
-  private UserReadService userReadService;
+  @Mock private UserReadService userReadService;
 
-  @InjectMocks
-  private UserQueryService userQueryService;
+  @InjectMocks private UserQueryService userQueryService;
 
   @Test
   public void should_find_user_by_id_when_user_exists() {
     String userId = "user123";
-    UserData expectedUserData = new UserData(
-        userId,
-        "test@example.com",
-        "testuser",
-        "Test bio",
-        "profile.jpg"
-    );
-    
+    UserData expectedUserData =
+        new UserData(userId, "test@example.com", "testuser", "Test bio", "profile.jpg");
+
     when(userReadService.findById(userId)).thenReturn(expectedUserData);
 
     Optional<UserData> result = userQueryService.findById(userId);
@@ -49,7 +42,7 @@ public class UserQueryServiceTest {
   @Test
   public void should_return_empty_when_user_not_found() {
     String userId = "nonexistent";
-    
+
     when(userReadService.findById(userId)).thenReturn(null);
 
     Optional<UserData> result = userQueryService.findById(userId);
@@ -71,7 +64,7 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_empty_user_id() {
     String emptyId = "";
-    
+
     when(userReadService.findById(emptyId)).thenReturn(null);
 
     Optional<UserData> result = userQueryService.findById(emptyId);
@@ -83,7 +76,7 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_whitespace_user_id() {
     String whitespaceId = "   ";
-    
+
     when(userReadService.findById(whitespaceId)).thenReturn(null);
 
     Optional<UserData> result = userQueryService.findById(whitespaceId);
@@ -95,14 +88,10 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_special_characters_in_user_id() {
     String specialId = "user-123_test@domain.com";
-    UserData userData = new UserData(
-        specialId,
-        "special@example.com",
-        "special_user",
-        "Special bio",
-        "special.jpg"
-    );
-    
+    UserData userData =
+        new UserData(
+            specialId, "special@example.com", "special_user", "Special bio", "special.jpg");
+
     when(userReadService.findById(specialId)).thenReturn(userData);
 
     Optional<UserData> result = userQueryService.findById(specialId);
@@ -115,14 +104,9 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_long_user_id() {
     String longId = "very-long-user-id-".repeat(10);
-    UserData userData = new UserData(
-        longId,
-        "long@example.com",
-        "longuser",
-        "Long bio",
-        "long.jpg"
-    );
-    
+    UserData userData =
+        new UserData(longId, "long@example.com", "longuser", "Long bio", "long.jpg");
+
     when(userReadService.findById(longId)).thenReturn(userData);
 
     Optional<UserData> result = userQueryService.findById(longId);
@@ -135,14 +119,10 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_unicode_user_id() {
     String unicodeId = "用户123";
-    UserData userData = new UserData(
-        unicodeId,
-        "unicode@example.com",
-        "unicodeuser",
-        "Unicode bio 测试",
-        "unicode.jpg"
-    );
-    
+    UserData userData =
+        new UserData(
+            unicodeId, "unicode@example.com", "unicodeuser", "Unicode bio 测试", "unicode.jpg");
+
     when(userReadService.findById(unicodeId)).thenReturn(userData);
 
     Optional<UserData> result = userQueryService.findById(unicodeId);
@@ -156,14 +136,8 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_user_data_with_null_fields() {
     String userId = "user456";
-    UserData userDataWithNulls = new UserData(
-        userId,
-        null,
-        null,
-        null,
-        null
-    );
-    
+    UserData userDataWithNulls = new UserData(userId, null, null, null, null);
+
     when(userReadService.findById(userId)).thenReturn(userDataWithNulls);
 
     Optional<UserData> result = userQueryService.findById(userId);
@@ -180,14 +154,8 @@ public class UserQueryServiceTest {
   @Test
   public void should_handle_user_data_with_empty_fields() {
     String userId = "user789";
-    UserData userDataWithEmpties = new UserData(
-        userId,
-        "",
-        "",
-        "",
-        ""
-    );
-    
+    UserData userDataWithEmpties = new UserData(userId, "", "", "", "");
+
     when(userReadService.findById(userId)).thenReturn(userDataWithEmpties);
 
     Optional<UserData> result = userQueryService.findById(userId);
@@ -207,7 +175,7 @@ public class UserQueryServiceTest {
     String userId2 = "user2";
     UserData userData1 = new UserData(userId1, "email1@test.com", "user1", "Bio1", "image1.jpg");
     UserData userData2 = new UserData(userId2, "email2@test.com", "user2", "Bio2", "image2.jpg");
-    
+
     when(userReadService.findById(userId1)).thenReturn(userData1);
     when(userReadService.findById(userId2)).thenReturn(userData2);
 
@@ -226,7 +194,7 @@ public class UserQueryServiceTest {
   public void should_delegate_to_user_read_service() {
     String userId = "delegation-test";
     UserData mockUserData = mock(UserData.class);
-    
+
     when(userReadService.findById(userId)).thenReturn(mockUserData);
 
     Optional<UserData> result = userQueryService.findById(userId);

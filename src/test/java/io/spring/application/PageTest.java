@@ -112,7 +112,7 @@ public class PageTest {
 
     assertThat(page1).isEqualTo(page2);
     assertThat(page1.hashCode()).isEqualTo(page2.hashCode());
-    
+
     assertThat(page1).isNotEqualTo(page3);
     assertThat(page1).isNotEqualTo(page4);
     assertThat(page1).isNotEqualTo(null);
@@ -122,9 +122,9 @@ public class PageTest {
   @Test
   public void should_test_toString() {
     Page page = new Page(15, 30);
-    
+
     String toString = page.toString();
-    
+
     assertThat(toString).isNotNull();
     assertThat(toString).contains("15");
     assertThat(toString).contains("30");

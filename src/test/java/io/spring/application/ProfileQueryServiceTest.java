@@ -1,18 +1,15 @@
 package io.spring.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-
-import java.util.Optional;
+import static org.mockito.Mockito.when;
 
 import io.spring.application.data.ProfileData;
 import io.spring.application.data.UserData;
 import io.spring.core.user.User;
 import io.spring.infrastructure.mybatis.readservice.UserReadService;
 import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class ProfileQueryServiceTest {
 
-  @Mock
-  private UserReadService userReadService;
+  @Mock private UserReadService userReadService;
 
-  @Mock
-  private UserRelationshipQueryService userRelationshipQueryService;
+  @Mock private UserRelationshipQueryService userRelationshipQueryService;
 
-  @InjectMocks
-  private ProfileQueryService profileQueryService;
+  @InjectMocks private ProfileQueryService profileQueryService;
 
   private User testUser;
   private UserData targetUserData;
@@ -38,7 +32,8 @@ public class ProfileQueryServiceTest {
   @BeforeEach
   public void setUp() {
     testUser = new User("test@example.com", "testuser", "password", "Test bio", "test.jpg");
-    targetUserData = new UserData("target-id", "target@example.com", "targetuser", "Target bio", "target.jpg");
+    targetUserData =
+        new UserData("target-id", "target@example.com", "targetuser", "Target bio", "target.jpg");
   }
 
   @Test
@@ -60,7 +55,8 @@ public class ProfileQueryServiceTest {
     assertThat(profileData.isFollowing()).isFalse();
 
     verify(userReadService).findByUsername(username);
-    verify(userRelationshipQueryService).isUserFollowing(currentUser.getId(), targetUserData.getId());
+    verify(userRelationshipQueryService)
+        .isUserFollowing(currentUser.getId(), targetUserData.getId());
   }
 
   @Test
@@ -92,7 +88,8 @@ public class ProfileQueryServiceTest {
     assertThat(profileData.isFollowing()).isTrue();
 
     verify(userReadService).findByUsername(username);
-    verify(userRelationshipQueryService).isUserFollowing(currentUser.getId(), targetUserData.getId());
+    verify(userRelationshipQueryService)
+        .isUserFollowing(currentUser.getId(), targetUserData.getId());
   }
 
   @Test
@@ -116,7 +113,8 @@ public class ProfileQueryServiceTest {
   public void should_handle_same_user_profile_lookup() {
     String username = "testuser";
     User currentUser = testUser;
-    UserData currentUserData = new UserData(testUser.getId(), "test@example.com", "testuser", "Test bio", "test.jpg");
+    UserData currentUserData =
+        new UserData(testUser.getId(), "test@example.com", "testuser", "Test bio", "test.jpg");
 
     when(userReadService.findByUsername(username)).thenReturn(currentUserData);
     when(userRelationshipQueryService.isUserFollowing(currentUser.getId(), currentUserData.getId()))

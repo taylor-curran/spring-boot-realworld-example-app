@@ -2,13 +2,10 @@ package io.spring.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.mockStatic;
-
-import java.util.Optional;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.spring.api.exception.ResourceNotFoundException;
 import io.spring.application.ProfileQueryService;
@@ -19,6 +16,7 @@ import io.spring.core.user.UserRepository;
 import io.spring.graphql.exception.AuthenticationException;
 import io.spring.graphql.types.Profile;
 import io.spring.graphql.types.ProfilePayload;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,14 +28,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class RelationMutationTest {
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private ProfileQueryService profileQueryService;
+  @Mock private ProfileQueryService profileQueryService;
 
-  @InjectMocks
-  private RelationMutation relationMutation;
+  @InjectMocks private RelationMutation relationMutation;
 
   private User currentUser;
   private User targetUser;
@@ -46,9 +41,15 @@ public class RelationMutationTest {
   @BeforeEach
   public void setUp() {
     currentUser = new User("current@example.com", "currentuser", "password", "bio", "image.jpg");
-    targetUser = new User("target@example.com", "targetuser", "password", "target bio", "target.jpg");
-    profileData = new ProfileData(targetUser.getId(), targetUser.getUsername(), 
-        targetUser.getBio(), targetUser.getImage(), false);
+    targetUser =
+        new User("target@example.com", "targetuser", "password", "target bio", "target.jpg");
+    profileData =
+        new ProfileData(
+            targetUser.getId(),
+            targetUser.getUsername(),
+            targetUser.getBio(),
+            targetUser.getImage(),
+            false);
   }
 
   @Test
@@ -56,7 +57,8 @@ public class RelationMutationTest {
     String username = "targetuser";
 
     when(userRepository.findByUsername(username)).thenReturn(Optional.of(targetUser));
-    when(profileQueryService.findByUsername(username, currentUser)).thenReturn(Optional.of(profileData));
+    when(profileQueryService.findByUsername(username, currentUser))
+        .thenReturn(Optional.of(profileData));
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
@@ -115,7 +117,8 @@ public class RelationMutationTest {
     when(userRepository.findByUsername(username)).thenReturn(Optional.of(targetUser));
     when(userRepository.findRelation(currentUser.getId(), targetUser.getId()))
         .thenReturn(Optional.of(followRelation));
-    when(profileQueryService.findByUsername(username, currentUser)).thenReturn(Optional.of(profileData));
+    when(profileQueryService.findByUsername(username, currentUser))
+        .thenReturn(Optional.of(profileData));
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
@@ -190,11 +193,17 @@ public class RelationMutationTest {
   @Test
   public void should_build_profile_correctly() {
     String username = "targetuser";
-    ProfileData profileDataWithFollowing = new ProfileData(targetUser.getId(), targetUser.getUsername(), 
-        targetUser.getBio(), targetUser.getImage(), true);
+    ProfileData profileDataWithFollowing =
+        new ProfileData(
+            targetUser.getId(),
+            targetUser.getUsername(),
+            targetUser.getBio(),
+            targetUser.getImage(),
+            true);
 
     when(userRepository.findByUsername(username)).thenReturn(Optional.of(targetUser));
-    when(profileQueryService.findByUsername(username, currentUser)).thenReturn(Optional.of(profileDataWithFollowing));
+    when(profileQueryService.findByUsername(username, currentUser))
+        .thenReturn(Optional.of(profileDataWithFollowing));
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));

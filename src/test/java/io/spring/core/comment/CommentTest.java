@@ -36,7 +36,8 @@ public class CommentTest {
 
   @Test
   public void should_create_comment_with_long_body() {
-    String longBody = "This is a very long comment body that contains a lot of text to test how the comment entity handles longer comments that users might want to write when commenting on articles in the system. It should handle this gracefully without any issues.";
+    String longBody =
+        "This is a very long comment body that contains a lot of text to test how the comment entity handles longer comments that users might want to write when commenting on articles in the system. It should handle this gracefully without any issues.";
     String userId = "user123";
     String articleId = "article456";
 
@@ -122,16 +123,17 @@ public class CommentTest {
   @Test
   public void should_create_comments_at_different_times() {
     Comment comment1 = new Comment("body1", "user123", "article456");
-    
+
     try {
       Thread.sleep(1);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
-    
+
     Comment comment2 = new Comment("body2", "user123", "article456");
 
-    assertThat(comment2.getCreatedAt().getMillis()).isGreaterThanOrEqualTo(comment1.getCreatedAt().getMillis());
+    assertThat(comment2.getCreatedAt().getMillis())
+        .isGreaterThanOrEqualTo(comment1.getCreatedAt().getMillis());
   }
 
   @Test
@@ -159,7 +161,7 @@ public class CommentTest {
   @Test
   public void should_create_comment_with_no_args_constructor() {
     Comment comment = new Comment();
-    
+
     assertThat(comment.getId()).isNull();
     assertThat(comment.getBody()).isNull();
     assertThat(comment.getUserId()).isNull();
@@ -167,11 +169,10 @@ public class CommentTest {
     assertThat(comment.getCreatedAt()).isNull();
   }
 
-
   @Test
   public void should_handle_can_equal_method() {
     Comment comment = new Comment("body", "user123", "article456");
-    
+
     assertThat(comment.canEqual(comment)).isTrue();
     assertThat(comment.canEqual(new Comment())).isTrue();
     assertThat(comment.canEqual("not a comment")).isFalse();
@@ -182,9 +183,9 @@ public class CommentTest {
   public void should_handle_hash_code_consistency() {
     Comment comment1 = new Comment("body", "user123", "article456");
     Comment comment2 = new Comment("body", "user123", "article456");
-    
+
     assertThat(comment1.hashCode()).isNotEqualTo(comment2.hashCode());
-    
+
     int hash1 = comment1.hashCode();
     int hash2 = comment1.hashCode();
     assertThat(hash1).isEqualTo(hash2);
@@ -194,7 +195,7 @@ public class CommentTest {
   public void should_handle_equals_with_same_id() {
     Comment comment1 = new Comment("body1", "user123", "article456");
     Comment comment2 = new Comment("body2", "user789", "article789");
-    
+
     java.lang.reflect.Field idField;
     try {
       idField = Comment.class.getDeclaredField("id");
@@ -202,7 +203,7 @@ public class CommentTest {
       String sameId = "same-id-123";
       idField.set(comment1, sameId);
       idField.set(comment2, sameId);
-      
+
       assertThat(comment1).isEqualTo(comment2);
       assertThat(comment1.hashCode()).isEqualTo(comment2.hashCode());
     } catch (Exception e) {
@@ -214,12 +215,12 @@ public class CommentTest {
   public void should_handle_equals_edge_cases() {
     Comment comment = new Comment("body", "user123", "article456");
     Comment nullIdComment = new Comment();
-    
+
     assertThat(comment.equals(comment)).isTrue();
     assertThat(comment.equals(null)).isFalse();
     assertThat(comment.equals("string")).isFalse();
     assertThat(comment.equals(new Object())).isFalse();
-    
+
     assertThat(nullIdComment.equals(nullIdComment)).isTrue();
     assertThat(nullIdComment.equals(comment)).isFalse();
     assertThat(comment.equals(nullIdComment)).isFalse();
@@ -229,7 +230,7 @@ public class CommentTest {
   public void should_handle_two_null_id_comments() {
     Comment comment1 = new Comment();
     Comment comment2 = new Comment();
-    
+
     assertThat(comment1).isEqualTo(comment2);
     assertThat(comment1.hashCode()).isEqualTo(comment2.hashCode());
   }
@@ -239,9 +240,9 @@ public class CommentTest {
     String veryLongBody = "a".repeat(10000);
     String veryLongUserId = "user-" + "b".repeat(1000);
     String veryLongArticleId = "article-" + "c".repeat(1000);
-    
+
     Comment comment = new Comment(veryLongBody, veryLongUserId, veryLongArticleId);
-    
+
     assertThat(comment.getBody()).isEqualTo(veryLongBody);
     assertThat(comment.getUserId()).isEqualTo(veryLongUserId);
     assertThat(comment.getArticleId()).isEqualTo(veryLongArticleId);
@@ -254,9 +255,9 @@ public class CommentTest {
     String unicodeBody = "评论内容 🚀 ñáéíóú";
     String unicodeUserId = "用户123";
     String unicodeArticleId = "文章456";
-    
+
     Comment comment = new Comment(unicodeBody, unicodeUserId, unicodeArticleId);
-    
+
     assertThat(comment.getBody()).isEqualTo(unicodeBody);
     assertThat(comment.getUserId()).isEqualTo(unicodeUserId);
     assertThat(comment.getArticleId()).isEqualTo(unicodeArticleId);
@@ -267,9 +268,9 @@ public class CommentTest {
     String jsonBody = "{\"message\": \"This is a JSON-like comment\", \"rating\": 5}";
     String userId = "user123";
     String articleId = "article456";
-    
+
     Comment comment = new Comment(jsonBody, userId, articleId);
-    
+
     assertThat(comment.getBody()).isEqualTo(jsonBody);
   }
 }

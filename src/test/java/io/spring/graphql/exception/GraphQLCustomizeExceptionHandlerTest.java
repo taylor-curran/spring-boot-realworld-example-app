@@ -4,26 +4,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.netflix.graphql.types.errors.ErrorType;
 import com.netflix.graphql.types.errors.TypedGraphQLError;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
 import graphql.execution.DataFetcherExceptionHandlerResult;
 import graphql.execution.ResultPath;
 import io.spring.api.exception.InvalidAuthenticationException;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.util.Set;
 @ExtendWith(MockitoExtension.class)
 public class GraphQLCustomizeExceptionHandlerTest {
 
-  @InjectMocks
-  private GraphQLCustomizeExceptionHandler exceptionHandler;
+  @InjectMocks private GraphQLCustomizeExceptionHandler exceptionHandler;
 
   private DataFetcherExceptionHandlerParameters mockParameters;
 
@@ -53,15 +51,18 @@ public class GraphQLCustomizeExceptionHandlerTest {
     when(violation.getPropertyPath()).thenReturn(mock(javax.validation.Path.class));
     when(violation.getPropertyPath().toString()).thenReturn("field.name");
     when(violation.getRootBeanClass()).thenReturn((Class) String.class);
-    
-    javax.validation.metadata.ConstraintDescriptor descriptor = mock(javax.validation.metadata.ConstraintDescriptor.class);
+
+    javax.validation.metadata.ConstraintDescriptor descriptor =
+        mock(javax.validation.metadata.ConstraintDescriptor.class);
     java.lang.annotation.Annotation annotation = mock(java.lang.annotation.Annotation.class);
     when(descriptor.getAnnotation()).thenReturn(annotation);
-    when(annotation.annotationType()).thenReturn((Class) javax.validation.constraints.NotNull.class);
+    when(annotation.annotationType())
+        .thenReturn((Class) javax.validation.constraints.NotNull.class);
     when(violation.getConstraintDescriptor()).thenReturn(descriptor);
 
     Set<ConstraintViolation<?>> violations = Set.of(violation);
-    ConstraintViolationException exception = new ConstraintViolationException("Validation failed", violations);
+    ConstraintViolationException exception =
+        new ConstraintViolationException("Validation failed", violations);
     when(mockParameters.getException()).thenReturn(exception);
 
     DataFetcherExceptionHandlerResult result = exceptionHandler.onException(mockParameters);

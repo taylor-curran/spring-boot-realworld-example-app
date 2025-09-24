@@ -13,9 +13,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @MybatisTest
 @TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DatabaseCleanupTestExecutionListener.class
+  DependencyInjectionTestExecutionListener.class,
+  DirtiesContextTestExecutionListener.class,
+  TransactionalTestExecutionListener.class,
+  DatabaseCleanupTestExecutionListener.class
 })
 public abstract class DbTestBase {}

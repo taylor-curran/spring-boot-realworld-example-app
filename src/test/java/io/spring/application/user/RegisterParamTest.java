@@ -58,7 +58,8 @@ public class RegisterParamTest {
   public void should_handle_long_values() {
     String longEmail = "very.long.email.address.that.might.exceed.normal.limits@example.com";
     String longUsername = "verylongusernamethatmightexceedtypicallimits";
-    String longPassword = "verylongpasswordthatmightexceedtypicallimitsandcontainspecialcharacters123!@#";
+    String longPassword =
+        "verylongpasswordthatmightexceedtypicallimitsandcontainspecialcharacters123!@#";
 
     RegisterParam param = new RegisterParam(longEmail, longUsername, longPassword);
 
@@ -96,7 +97,8 @@ public class RegisterParamTest {
 
   @Test
   public void should_handle_whitespace_values() {
-    RegisterParam param = new RegisterParam("  test@example.com  ", "  testuser  ", "  password123  ");
+    RegisterParam param =
+        new RegisterParam("  test@example.com  ", "  testuser  ", "  password123  ");
 
     assertThat(param.getEmail()).isEqualTo("  test@example.com  ");
     assertThat(param.getUsername()).isEqualTo("  testuser  ");

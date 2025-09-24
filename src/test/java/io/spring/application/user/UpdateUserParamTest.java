@@ -8,13 +8,9 @@ public class UpdateUserParamTest {
 
   @Test
   public void should_create_update_user_param_with_all_fields() {
-    UpdateUserParam param = new UpdateUserParam(
-        "test@example.com",
-        "newpassword",
-        "newusername",
-        "New bio content",
-        "new-image.jpg"
-    );
+    UpdateUserParam param =
+        new UpdateUserParam(
+            "test@example.com", "newpassword", "newusername", "New bio content", "new-image.jpg");
 
     assertThat(param.getEmail()).isEqualTo("test@example.com");
     assertThat(param.getPassword()).isEqualTo("newpassword");
@@ -36,13 +32,14 @@ public class UpdateUserParamTest {
 
   @Test
   public void should_create_update_user_param_with_builder() {
-    UpdateUserParam param = UpdateUserParam.builder()
-        .email("builder@example.com")
-        .password("builderpassword")
-        .username("builderusername")
-        .bio("Builder bio")
-        .image("builder-image.png")
-        .build();
+    UpdateUserParam param =
+        UpdateUserParam.builder()
+            .email("builder@example.com")
+            .password("builderpassword")
+            .username("builderusername")
+            .bio("Builder bio")
+            .image("builder-image.png")
+            .build();
 
     assertThat(param.getEmail()).isEqualTo("builder@example.com");
     assertThat(param.getPassword()).isEqualTo("builderpassword");
@@ -64,10 +61,8 @@ public class UpdateUserParamTest {
 
   @Test
   public void should_handle_partial_builder_updates() {
-    UpdateUserParam param = UpdateUserParam.builder()
-        .email("partial@example.com")
-        .username("partialuser")
-        .build();
+    UpdateUserParam param =
+        UpdateUserParam.builder().email("partial@example.com").username("partialuser").build();
 
     assertThat(param.getEmail()).isEqualTo("partial@example.com");
     assertThat(param.getPassword()).isEqualTo("");
@@ -100,13 +95,13 @@ public class UpdateUserParamTest {
 
   @Test
   public void should_handle_special_characters() {
-    UpdateUserParam param = new UpdateUserParam(
-        "special+email@example.com",
-        "p@ssw0rd!@#$%^&*()",
-        "user_name-123",
-        "Bio with émojis 🚀 and unicode: 测试内容",
-        "image-with-special-chars!@#.jpg"
-    );
+    UpdateUserParam param =
+        new UpdateUserParam(
+            "special+email@example.com",
+            "p@ssw0rd!@#$%^&*()",
+            "user_name-123",
+            "Bio with émojis 🚀 and unicode: 测试内容",
+            "image-with-special-chars!@#.jpg");
 
     assertThat(param.getEmail()).isEqualTo("special+email@example.com");
     assertThat(param.getPassword()).isEqualTo("p@ssw0rd!@#$%^&*()");
@@ -123,7 +118,8 @@ public class UpdateUserParamTest {
     String longBio = "Very long bio content ".repeat(50);
     String longImage = "very-long-image-filename-".repeat(10) + ".jpg";
 
-    UpdateUserParam param = new UpdateUserParam(longEmail, longPassword, longUsername, longBio, longImage);
+    UpdateUserParam param =
+        new UpdateUserParam(longEmail, longPassword, longUsername, longBio, longImage);
 
     assertThat(param.getEmail()).isEqualTo(longEmail);
     assertThat(param.getPassword()).isEqualTo(longPassword);
@@ -134,13 +130,13 @@ public class UpdateUserParamTest {
 
   @Test
   public void should_handle_whitespace_content() {
-    UpdateUserParam param = new UpdateUserParam(
-        "  email@example.com  ",
-        "  password  ",
-        "  username  ",
-        "  bio content  ",
-        "  image.jpg  "
-    );
+    UpdateUserParam param =
+        new UpdateUserParam(
+            "  email@example.com  ",
+            "  password  ",
+            "  username  ",
+            "  bio content  ",
+            "  image.jpg  ");
 
     assertThat(param.getEmail()).isEqualTo("  email@example.com  ");
     assertThat(param.getPassword()).isEqualTo("  password  ");
@@ -152,27 +148,23 @@ public class UpdateUserParamTest {
   @Test
   public void should_handle_multiline_bio() {
     String multilineBio = "First line of bio\nSecond line of bio\n\nThird line after empty line";
-    
-    UpdateUserParam param = new UpdateUserParam(
-        "test@example.com",
-        "password",
-        "username",
-        multilineBio,
-        "image.jpg"
-    );
+
+    UpdateUserParam param =
+        new UpdateUserParam("test@example.com", "password", "username", multilineBio, "image.jpg");
 
     assertThat(param.getBio()).isEqualTo(multilineBio);
   }
 
   @Test
   public void should_handle_builder_with_null_values() {
-    UpdateUserParam param = UpdateUserParam.builder()
-        .email(null)
-        .password(null)
-        .username(null)
-        .bio(null)
-        .image(null)
-        .build();
+    UpdateUserParam param =
+        UpdateUserParam.builder()
+            .email(null)
+            .password(null)
+            .username(null)
+            .bio(null)
+            .image(null)
+            .build();
 
     assertThat(param.getEmail()).isNull();
     assertThat(param.getPassword()).isNull();

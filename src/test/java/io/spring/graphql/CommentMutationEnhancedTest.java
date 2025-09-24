@@ -22,9 +22,7 @@ import io.spring.core.comment.CommentRepository;
 import io.spring.core.user.User;
 import io.spring.graphql.exception.AuthenticationException;
 import io.spring.graphql.types.CommentPayload;
-import io.spring.graphql.types.DeletionStatus;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
@@ -38,25 +36,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class CommentMutationEnhancedTest {
 
-  @Mock
-  private ArticleRepository articleRepository;
+  @Mock private ArticleRepository articleRepository;
 
-  @Mock
-  private CommentRepository commentRepository;
+  @Mock private CommentRepository commentRepository;
 
-  @Mock
-  private CommentQueryService commentQueryService;
+  @Mock private CommentQueryService commentQueryService;
 
-  @InjectMocks
-  private CommentMutation commentMutation;
+  @InjectMocks private CommentMutation commentMutation;
 
   @Test
   public void createComment_should_throw_authentication_exception_when_user_not_authenticated() {
     try (MockedStatic<SecurityUtil> mockedSecurityUtil = Mockito.mockStatic(SecurityUtil.class)) {
       mockedSecurityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.empty());
 
-      assertThrows(AuthenticationException.class, () ->
-        commentMutation.createComment("test-slug", "Test comment body"));
+      assertThrows(
+          AuthenticationException.class,
+          () -> commentMutation.createComment("test-slug", "Test comment body"));
     }
 
     verify(articleRepository, never()).findBySlug(any());
@@ -66,13 +61,14 @@ public class CommentMutationEnhancedTest {
   @Test
   public void createComment_should_throw_resource_not_found_when_article_not_exists() {
     User mockUser = createMockUser();
-    
+
     try (MockedStatic<SecurityUtil> mockedSecurityUtil = Mockito.mockStatic(SecurityUtil.class)) {
       mockedSecurityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(mockUser));
       when(articleRepository.findBySlug("nonexistent-slug")).thenReturn(Optional.empty());
 
-      assertThrows(ResourceNotFoundException.class, () ->
-        commentMutation.createComment("nonexistent-slug", "Test comment body"));
+      assertThrows(
+          ResourceNotFoundException.class,
+          () -> commentMutation.createComment("nonexistent-slug", "Test comment body"));
     }
 
     verify(articleRepository).findBySlug("nonexistent-slug");
@@ -84,15 +80,16 @@ public class CommentMutationEnhancedTest {
     User mockUser = createMockUser();
     Article mockArticle = createMockArticle();
     CommentData mockCommentData = createMockCommentData();
-    
+
     try (MockedStatic<SecurityUtil> mockedSecurityUtil = Mockito.mockStatic(SecurityUtil.class)) {
       mockedSecurityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(mockUser));
       when(articleRepository.findBySlug("test-slug")).thenReturn(Optional.of(mockArticle));
       doNothing().when(commentRepository).save(any(Comment.class));
-      when(commentQueryService.findById(any(), eq(mockUser))).thenReturn(Optional.of(mockCommentData));
+      when(commentQueryService.findById(any(), eq(mockUser)))
+          .thenReturn(Optional.of(mockCommentData));
 
-      DataFetcherResult<CommentPayload> result = 
-        commentMutation.createComment("test-slug", "Test comment body");
+      DataFetcherResult<CommentPayload> result =
+          commentMutation.createComment("test-slug", "Test comment body");
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -107,21 +104,23 @@ public class CommentMutationEnhancedTest {
     try (MockedStatic<SecurityUtil> mockedSecurityUtil = Mockito.mockStatic(SecurityUtil.class)) {
       mockedSecurityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.empty());
 
-      assertThrows(AuthenticationException.class, () ->
-        commentMutation.removeComment("test-slug", "comment-id"));
+      assertThrows(
+          AuthenticationException.class,
+          () -> commentMutation.removeComment("test-slug", "comment-id"));
     }
   }
 
   @Test
   public void removeComment_should_throw_resource_not_found_when_article_not_exists() {
     User mockUser = createMockUser();
-    
+
     try (MockedStatic<SecurityUtil> mockedSecurityUtil = Mockito.mockStatic(SecurityUtil.class)) {
       mockedSecurityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(mockUser));
       when(articleRepository.findBySlug("nonexistent-slug")).thenReturn(Optional.empty());
 
-      assertThrows(ResourceNotFoundException.class, () ->
-        commentMutation.removeComment("nonexistent-slug", "comment-id"));
+      assertThrows(
+          ResourceNotFoundException.class,
+          () -> commentMutation.removeComment("nonexistent-slug", "comment-id"));
     }
   }
 
@@ -130,15 +129,17 @@ public class CommentMutationEnhancedTest {
     User mockUser = createMockUser();
     Article mockArticle = createMockArticle();
     Comment mockComment = createMockComment();
-    
+
     try (MockedStatic<SecurityUtil> mockedSecurityUtil = Mockito.mockStatic(SecurityUtil.class)) {
       mockedSecurityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(mockUser));
       when(articleRepository.findBySlug("test-slug")).thenReturn(Optional.of(mockArticle));
-      when(commentRepository.findById(mockArticle.getId(), "comment-id")).thenReturn(Optional.of(mockComment));
+      when(commentRepository.findById(mockArticle.getId(), "comment-id"))
+          .thenReturn(Optional.of(mockComment));
 
-      assertThrows(NoAuthorizationException.class, () ->
-        commentMutation.removeComment("test-slug", "comment-id"));
-      
+      assertThrows(
+          NoAuthorizationException.class,
+          () -> commentMutation.removeComment("test-slug", "comment-id"));
+
       verify(commentRepository).findById(mockArticle.getId(), "comment-id");
       verify(commentRepository, never()).remove(mockComment);
     }
@@ -150,7 +151,9 @@ public class CommentMutationEnhancedTest {
   }
 
   private Article createMockArticle() {
-    Article article = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), "user-id");
+    Article article =
+        new Article(
+            "Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), "user-id");
     return article;
   }
 
@@ -160,8 +163,13 @@ public class CommentMutationEnhancedTest {
   }
 
   private CommentData createMockCommentData() {
-    return new CommentData("comment-id", "Test comment body", "article-id", 
-        DateTime.now(), DateTime.now(), createMockProfileData());
+    return new CommentData(
+        "comment-id",
+        "Test comment body",
+        "article-id",
+        DateTime.now(),
+        DateTime.now(),
+        createMockProfileData());
   }
 
   private ProfileData createMockProfileData() {

@@ -4,6 +4,7 @@ import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
+import io.spring.infrastructure.DatabaseCleanupTestExecutionListener;
 import io.spring.infrastructure.mybatis.mapper.ArticleMapper;
 import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
@@ -16,16 +17,15 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import io.spring.infrastructure.DatabaseCleanupTestExecutionListener;
 
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DatabaseCleanupTestExecutionListener.class
+  DependencyInjectionTestExecutionListener.class,
+  DirtiesContextTestExecutionListener.class,
+  TransactionalTestExecutionListener.class,
+  DatabaseCleanupTestExecutionListener.class
 })
 public class ArticleRepositoryTransactionTest {
   @Autowired private ArticleRepository articleRepository;

@@ -16,11 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class TagDatafetcherTest {
 
-  @Mock
-  private TagsQueryService tagsQueryService;
+  @Mock private TagsQueryService tagsQueryService;
 
-  @InjectMocks
-  private TagDatafetcher tagDatafetcher;
+  @InjectMocks private TagDatafetcher tagDatafetcher;
 
   @Test
   public void should_get_all_tags() {
@@ -57,13 +55,15 @@ public class TagDatafetcherTest {
 
   @Test
   public void should_handle_tags_with_special_characters() {
-    List<String> specialTags = Arrays.asList("spring-boot", "java_8", "test-driven-development", "micro-services");
+    List<String> specialTags =
+        Arrays.asList("spring-boot", "java_8", "test-driven-development", "micro-services");
     when(tagsQueryService.allTags()).thenReturn(specialTags);
 
     List<String> result = tagDatafetcher.getTags();
 
     assertThat(result).hasSize(4);
-    assertThat(result).containsExactly("spring-boot", "java_8", "test-driven-development", "micro-services");
+    assertThat(result)
+        .containsExactly("spring-boot", "java_8", "test-driven-development", "micro-services");
   }
 
   @Test
@@ -79,10 +79,11 @@ public class TagDatafetcherTest {
 
   @Test
   public void should_handle_large_number_of_tags() {
-    List<String> manyTags = Arrays.asList(
-        "tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9", "tag10",
-        "tag11", "tag12", "tag13", "tag14", "tag15", "tag16", "tag17", "tag18", "tag19", "tag20"
-    );
+    List<String> manyTags =
+        Arrays.asList(
+            "tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9", "tag10",
+            "tag11", "tag12", "tag13", "tag14", "tag15", "tag16", "tag17", "tag18", "tag19",
+            "tag20");
     when(tagsQueryService.allTags()).thenReturn(manyTags);
 
     List<String> result = tagDatafetcher.getTags();
@@ -103,12 +104,14 @@ public class TagDatafetcherTest {
 
   @Test
   public void should_handle_tags_with_whitespace() {
-    List<String> whitespaceTags = Arrays.asList("  leading-space", "trailing-space  ", "  both-spaces  ", "no-space");
+    List<String> whitespaceTags =
+        Arrays.asList("  leading-space", "trailing-space  ", "  both-spaces  ", "no-space");
     when(tagsQueryService.allTags()).thenReturn(whitespaceTags);
 
     List<String> result = tagDatafetcher.getTags();
 
     assertThat(result).hasSize(4);
-    assertThat(result).containsExactly("  leading-space", "trailing-space  ", "  both-spaces  ", "no-space");
+    assertThat(result)
+        .containsExactly("  leading-space", "trailing-space  ", "  both-spaces  ", "no-space");
   }
 }
