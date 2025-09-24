@@ -13,8 +13,8 @@ import io.spring.application.data.ArticleData;
 import io.spring.application.data.ArticleDataList;
 import io.spring.application.data.ProfileData;
 import io.spring.core.user.User;
-import io.spring.infrastructure.mybatis.readservice.ArticleReadService;
 import io.spring.infrastructure.mybatis.readservice.ArticleFavoritesReadService;
+import io.spring.infrastructure.mybatis.readservice.ArticleReadService;
 import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,27 +30,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class ArticleQueryServiceEnhancedTest {
 
-  @Mock
-  private ArticleReadService articleReadService;
+  @Mock private ArticleReadService articleReadService;
 
-  @Mock
-  private ArticleFavoritesReadService articleFavoritesReadService;
+  @Mock private ArticleFavoritesReadService articleFavoritesReadService;
 
-  @Mock
-  private UserRelationshipQueryService userRelationshipQueryService;
+  @Mock private UserRelationshipQueryService userRelationshipQueryService;
 
-  @InjectMocks
-  private ArticleQueryService articleQueryService;
+  @InjectMocks private ArticleQueryService articleQueryService;
 
   @Test
   public void findRecentArticles_should_handle_null_parameters() {
     when(articleReadService.queryArticles(isNull(), isNull(), isNull(), any(Page.class)))
         .thenReturn(Collections.emptyList());
-    when(articleReadService.countArticle(isNull(), isNull(), isNull()))
-        .thenReturn(0);
+    when(articleReadService.countArticle(isNull(), isNull(), isNull())).thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(
-        null, null, null, new Page(0, 20), null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles(null, null, null, new Page(0, 20), null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -63,11 +58,10 @@ public class ArticleQueryServiceEnhancedTest {
   public void findRecentArticles_should_handle_empty_string_parameters() {
     when(articleReadService.queryArticles(eq(""), eq(""), eq(""), any(Page.class)))
         .thenReturn(Collections.emptyList());
-    when(articleReadService.countArticle(eq(""), eq(""), eq("")))
-        .thenReturn(0);
+    when(articleReadService.countArticle(eq(""), eq(""), eq(""))).thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(
-        "", "", "", new Page(0, 20), null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles("", "", "", new Page(0, 20), null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -78,11 +72,10 @@ public class ArticleQueryServiceEnhancedTest {
   public void findRecentArticles_should_handle_whitespace_parameters() {
     when(articleReadService.queryArticles(eq("   "), eq("   "), eq("   "), any(Page.class)))
         .thenReturn(Collections.emptyList());
-    when(articleReadService.countArticle(eq("   "), eq("   "), eq("   ")))
-        .thenReturn(0);
+    when(articleReadService.countArticle(eq("   "), eq("   "), eq("   "))).thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(
-        "   ", "   ", "   ", new Page(0, 20), null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles("   ", "   ", "   ", new Page(0, 20), null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -95,13 +88,15 @@ public class ArticleQueryServiceEnhancedTest {
     String specialAuthor = "user_name-123";
     String specialFavoriter = "favoriter@domain.com";
 
-    when(articleReadService.queryArticles(eq(specialTag), eq(specialAuthor), eq(specialFavoriter), any(Page.class)))
+    when(articleReadService.queryArticles(
+            eq(specialTag), eq(specialAuthor), eq(specialFavoriter), any(Page.class)))
         .thenReturn(Collections.emptyList());
     when(articleReadService.countArticle(eq(specialTag), eq(specialAuthor), eq(specialFavoriter)))
         .thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(
-        specialTag, specialAuthor, specialFavoriter, new Page(0, 20), null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles(
+            specialTag, specialAuthor, specialFavoriter, new Page(0, 20), null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -114,13 +109,15 @@ public class ArticleQueryServiceEnhancedTest {
     String unicodeAuthor = "用户名";
     String unicodeFavoriter = "收藏者";
 
-    when(articleReadService.queryArticles(eq(unicodeTag), eq(unicodeAuthor), eq(unicodeFavoriter), any(Page.class)))
+    when(articleReadService.queryArticles(
+            eq(unicodeTag), eq(unicodeAuthor), eq(unicodeFavoriter), any(Page.class)))
         .thenReturn(Collections.emptyList());
     when(articleReadService.countArticle(eq(unicodeTag), eq(unicodeAuthor), eq(unicodeFavoriter)))
         .thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(
-        unicodeTag, unicodeAuthor, unicodeFavoriter, new Page(0, 20), null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles(
+            unicodeTag, unicodeAuthor, unicodeFavoriter, new Page(0, 20), null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -130,13 +127,13 @@ public class ArticleQueryServiceEnhancedTest {
   @Test
   public void findRecentArticles_should_handle_large_page_size() {
     Page largePage = new Page(0, 1000);
-    
+
     when(articleReadService.queryArticles(isNull(), isNull(), isNull(), eq(largePage)))
         .thenReturn(Collections.emptyList());
-    when(articleReadService.countArticle(isNull(), isNull(), isNull()))
-        .thenReturn(0);
+    when(articleReadService.countArticle(isNull(), isNull(), isNull())).thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(null, null, null, largePage, null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles(null, null, null, largePage, null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -146,13 +143,13 @@ public class ArticleQueryServiceEnhancedTest {
   @Test
   public void findRecentArticles_should_handle_zero_page_size() {
     Page zeroPage = new Page(0, 0);
-    
+
     when(articleReadService.queryArticles(isNull(), isNull(), isNull(), eq(zeroPage)))
         .thenReturn(Collections.emptyList());
-    when(articleReadService.countArticle(isNull(), isNull(), isNull()))
-        .thenReturn(0);
+    when(articleReadService.countArticle(isNull(), isNull(), isNull())).thenReturn(0);
 
-    ArticleDataList result = articleQueryService.findRecentArticles(null, null, null, zeroPage, null);
+    ArticleDataList result =
+        articleQueryService.findRecentArticles(null, null, null, zeroPage, null);
 
     assertThat(result).isNotNull();
     assertThat(result.getArticleDatas()).isEmpty();
@@ -161,13 +158,14 @@ public class ArticleQueryServiceEnhancedTest {
 
   @Test
   public void findRecentArticlesWithCursor_should_handle_null_user() {
-    CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
-    
+    CursorPageParameter<DateTime> pageParam =
+        new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
+
     when(articleReadService.findArticlesWithCursor(isNull(), isNull(), isNull(), eq(pageParam)))
         .thenReturn(Collections.emptyList());
 
-    CursorPager<ArticleData> result = articleQueryService.findRecentArticlesWithCursor(
-        null, null, null, pageParam, null);
+    CursorPager<ArticleData> result =
+        articleQueryService.findRecentArticlesWithCursor(null, null, null, pageParam, null);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isEmpty();
@@ -176,14 +174,15 @@ public class ArticleQueryServiceEnhancedTest {
 
   @Test
   public void findRecentArticlesWithCursor_should_handle_authenticated_user() {
-    CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
+    CursorPageParameter<DateTime> pageParam =
+        new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
     User mockUser = new User("test@example.com", "testuser", "password", "bio", "image");
-    
+
     when(articleReadService.findArticlesWithCursor(isNull(), isNull(), isNull(), eq(pageParam)))
         .thenReturn(Collections.emptyList());
 
-    CursorPager<ArticleData> result = articleQueryService.findRecentArticlesWithCursor(
-        null, null, null, pageParam, mockUser);
+    CursorPager<ArticleData> result =
+        articleQueryService.findRecentArticlesWithCursor(null, null, null, pageParam, mockUser);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isEmpty();
@@ -192,23 +191,27 @@ public class ArticleQueryServiceEnhancedTest {
 
   @Test
   public void findUserFeedWithCursor_should_throw_exception_when_user_is_null() {
-    CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
-    
-    assertThrows(NullPointerException.class, () -> 
-        articleQueryService.findUserFeedWithCursor(null, pageParam));
+    CursorPageParameter<DateTime> pageParam =
+        new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
+
+    assertThrows(
+        NullPointerException.class,
+        () -> articleQueryService.findUserFeedWithCursor(null, pageParam));
   }
 
   @Test
   public void findUserFeedWithCursor_should_handle_authenticated_user() {
     User mockUser = createMockUser();
-    CursorPageParameter<DateTime> pageParam = new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
-    
+    CursorPageParameter<DateTime> pageParam =
+        new CursorPageParameter<>(null, 20, CursorPager.Direction.NEXT);
+
     when(userRelationshipQueryService.followedUsers(eq("user-id")))
         .thenReturn(Arrays.asList("followed-user-1"));
     when(articleReadService.findArticlesOfAuthorsWithCursor(any(List.class), eq(pageParam)))
         .thenReturn(Collections.emptyList());
 
-    CursorPager<ArticleData> result = articleQueryService.findUserFeedWithCursor(mockUser, pageParam);
+    CursorPager<ArticleData> result =
+        articleQueryService.findUserFeedWithCursor(mockUser, pageParam);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isEmpty();
@@ -219,9 +222,8 @@ public class ArticleQueryServiceEnhancedTest {
   public void findById_should_handle_null_user() {
     String articleId = "article-123";
     ArticleData mockArticleData = createMockArticleData();
-    
-    when(articleReadService.findById(eq(articleId)))
-        .thenReturn(mockArticleData);
+
+    when(articleReadService.findById(eq(articleId))).thenReturn(mockArticleData);
 
     Optional<ArticleData> result = articleQueryService.findById(articleId, null);
 
@@ -235,13 +237,11 @@ public class ArticleQueryServiceEnhancedTest {
     String articleId = "article-123";
     User mockUser = createMockUser();
     ArticleData mockArticleData = createMockArticleData();
-    
-    when(articleReadService.findById(eq(articleId)))
-        .thenReturn(mockArticleData);
+
+    when(articleReadService.findById(eq(articleId))).thenReturn(mockArticleData);
     when(articleFavoritesReadService.isUserFavorite(eq("user-id"), eq(articleId)))
         .thenReturn(false);
-    when(articleFavoritesReadService.articleFavoriteCount(eq(articleId)))
-        .thenReturn(0);
+    when(articleFavoritesReadService.articleFavoriteCount(eq(articleId))).thenReturn(0);
     when(userRelationshipQueryService.isUserFollowing(eq("user-id"), eq("user-id")))
         .thenReturn(false);
 
@@ -255,9 +255,8 @@ public class ArticleQueryServiceEnhancedTest {
   @Test
   public void findById_should_return_empty_when_article_not_found() {
     String articleId = "nonexistent-article";
-    
-    when(articleReadService.findById(eq(articleId)))
-        .thenReturn(null);
+
+    when(articleReadService.findById(eq(articleId))).thenReturn(null);
 
     Optional<ArticleData> result = articleQueryService.findById(articleId, null);
 
@@ -269,9 +268,8 @@ public class ArticleQueryServiceEnhancedTest {
   public void findBySlug_should_handle_null_user() {
     String slug = "test-article-slug";
     ArticleData mockArticleData = createMockArticleData();
-    
-    when(articleReadService.findBySlug(eq(slug)))
-        .thenReturn(mockArticleData);
+
+    when(articleReadService.findBySlug(eq(slug))).thenReturn(mockArticleData);
 
     Optional<ArticleData> result = articleQueryService.findBySlug(slug, null);
 
@@ -285,13 +283,11 @@ public class ArticleQueryServiceEnhancedTest {
     String slug = "test-article-slug";
     User mockUser = createMockUser();
     ArticleData mockArticleData = createMockArticleData();
-    
-    when(articleReadService.findBySlug(eq(slug)))
-        .thenReturn(mockArticleData);
+
+    when(articleReadService.findBySlug(eq(slug))).thenReturn(mockArticleData);
     when(articleFavoritesReadService.isUserFavorite(eq("user-id"), eq("article-id")))
         .thenReturn(false);
-    when(articleFavoritesReadService.articleFavoriteCount(eq("article-id")))
-        .thenReturn(0);
+    when(articleFavoritesReadService.articleFavoriteCount(eq("article-id"))).thenReturn(0);
     when(userRelationshipQueryService.isUserFollowing(eq("user-id"), eq("user-id")))
         .thenReturn(false);
 
@@ -305,9 +301,8 @@ public class ArticleQueryServiceEnhancedTest {
   @Test
   public void findBySlug_should_return_empty_when_article_not_found() {
     String slug = "nonexistent-slug";
-    
-    when(articleReadService.findBySlug(eq(slug)))
-        .thenReturn(null);
+
+    when(articleReadService.findBySlug(eq(slug))).thenReturn(null);
 
     Optional<ArticleData> result = articleQueryService.findBySlug(slug, null);
 
@@ -319,9 +314,8 @@ public class ArticleQueryServiceEnhancedTest {
   public void findBySlug_should_handle_special_characters_in_slug() {
     String specialSlug = "test-article-123_with@special.chars";
     ArticleData mockArticleData = createMockArticleData();
-    
-    when(articleReadService.findBySlug(eq(specialSlug)))
-        .thenReturn(mockArticleData);
+
+    when(articleReadService.findBySlug(eq(specialSlug))).thenReturn(mockArticleData);
 
     Optional<ArticleData> result = articleQueryService.findBySlug(specialSlug, null);
 
@@ -333,9 +327,8 @@ public class ArticleQueryServiceEnhancedTest {
   public void findBySlug_should_handle_unicode_in_slug() {
     String unicodeSlug = "测试文章-slug";
     ArticleData mockArticleData = createMockArticleData();
-    
-    when(articleReadService.findBySlug(eq(unicodeSlug)))
-        .thenReturn(mockArticleData);
+
+    when(articleReadService.findBySlug(eq(unicodeSlug))).thenReturn(mockArticleData);
 
     Optional<ArticleData> result = articleQueryService.findBySlug(unicodeSlug, null);
 
@@ -360,9 +353,19 @@ public class ArticleQueryServiceEnhancedTest {
   }
 
   private ArticleData createMockArticleData() {
-    ProfileData profileData = new ProfileData("user-id", "testuser", "Test Bio", "image.jpg", false);
+    ProfileData profileData =
+        new ProfileData("user-id", "testuser", "Test Bio", "image.jpg", false);
     return new ArticleData(
-        "article-id", "test-slug", "Test Title", "Test Description", "Test Body",
-        false, 0, DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData);
+        "article-id",
+        "test-slug",
+        "Test Title",
+        "Test Description",
+        "Test Body",
+        false,
+        0,
+        DateTime.now(),
+        DateTime.now(),
+        Arrays.asList("tag1"),
+        profileData);
   }
 }

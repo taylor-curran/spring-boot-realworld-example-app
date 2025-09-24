@@ -2,7 +2,6 @@ package io.spring.application.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 public class UserDataTest {
@@ -27,7 +26,7 @@ public class UserDataTest {
   @Test
   public void should_create_user_data_with_no_args_constructor() {
     UserData userData = new UserData();
-    
+
     assertThat(userData.getId()).isNull();
     assertThat(userData.getEmail()).isNull();
     assertThat(userData.getUsername()).isNull();
@@ -61,9 +60,9 @@ public class UserDataTest {
   public void should_handle_email_validation_format() {
     UserData userData = new UserData();
     String email = "test@example.com";
-    
+
     userData.setEmail(email);
-    
+
     assertThat(userData.getEmail()).isEqualTo(email);
     assertThat(userData.getEmail()).contains("@");
     assertThat(userData.getEmail()).contains(".");
@@ -73,9 +72,9 @@ public class UserDataTest {
   public void should_handle_username_operations() {
     UserData userData = new UserData();
     String username = "testuser123";
-    
+
     userData.setUsername(username);
-    
+
     assertThat(userData.getUsername()).isEqualTo(username);
     assertThat(userData.getUsername()).hasSize(11);
   }
@@ -125,7 +124,7 @@ public class UserDataTest {
   @Test
   public void should_handle_equals_with_different_types() {
     UserData user = createSampleUserData();
-    
+
     assertThat(user.equals(null)).isFalse();
     assertThat(user.equals("not a user")).isFalse();
     assertThat(user.equals(new Object())).isFalse();
@@ -134,19 +133,19 @@ public class UserDataTest {
   @Test
   public void should_handle_equals_with_different_fields() {
     UserData user1 = new UserData("id1", "user1@example.com", "username1", "bio1", "image1.jpg");
-    
+
     UserData user2 = new UserData("id2", "user1@example.com", "username1", "bio1", "image1.jpg");
     assertThat(user1).isNotEqualTo(user2);
-    
+
     UserData user3 = new UserData("id1", "user2@example.com", "username1", "bio1", "image1.jpg");
     assertThat(user1).isNotEqualTo(user3);
-    
+
     UserData user4 = new UserData("id1", "user1@example.com", "username2", "bio1", "image1.jpg");
     assertThat(user1).isNotEqualTo(user4);
-    
+
     UserData user5 = new UserData("id1", "user1@example.com", "username1", "bio2", "image1.jpg");
     assertThat(user1).isNotEqualTo(user5);
-    
+
     UserData user6 = new UserData("id1", "user1@example.com", "username1", "bio1", "image2.jpg");
     assertThat(user1).isNotEqualTo(user6);
   }
@@ -156,7 +155,7 @@ public class UserDataTest {
     UserData user1 = new UserData(null, null, null, null, null);
     UserData user2 = new UserData(null, null, null, null, null);
     UserData user3 = new UserData("id", null, null, null, null);
-    
+
     assertThat(user1).isEqualTo(user2);
     assertThat(user1).isNotEqualTo(user3);
     assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
@@ -165,7 +164,7 @@ public class UserDataTest {
   @Test
   public void should_handle_can_equal_method() {
     UserData user = createSampleUserData();
-    
+
     assertThat(user.canEqual(user)).isTrue();
     assertThat(user.canEqual(new UserData())).isTrue();
     assertThat(user.canEqual("not a user")).isFalse();
@@ -176,9 +175,9 @@ public class UserDataTest {
   public void should_handle_hash_code_consistency() {
     UserData user1 = new UserData("id1", "user1@example.com", "username1", "bio1", "image1.jpg");
     UserData user2 = new UserData("id1", "user1@example.com", "username1", "bio1", "image1.jpg");
-    
+
     assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
-    
+
     int hash1 = user1.hashCode();
     int hash2 = user1.hashCode();
     assertThat(hash1).isEqualTo(hash2);

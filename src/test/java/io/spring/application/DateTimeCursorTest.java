@@ -117,7 +117,7 @@ public class DateTimeCursorTest {
     // DateTimeCursor inherits equals/hashCode from PageCursor, test the data equality
     assertThat(cursor1.getData()).isEqualTo(cursor2.getData());
     assertThat(cursor1.toString()).isEqualTo(cursor2.toString());
-    
+
     assertThat(cursor1.getData()).isNotEqualTo(cursor3.getData());
     assertThat(cursor1.toString()).isNotEqualTo(cursor3.toString());
   }
@@ -126,9 +126,9 @@ public class DateTimeCursorTest {
   public void should_test_toString() {
     DateTime dateTime = new DateTime(1640995200000L);
     DateTimeCursor cursor = new DateTimeCursor(dateTime);
-    
+
     String toString = cursor.toString();
-    
+
     assertThat(toString).isNotNull();
     assertThat(toString).contains("1640995200000");
   }

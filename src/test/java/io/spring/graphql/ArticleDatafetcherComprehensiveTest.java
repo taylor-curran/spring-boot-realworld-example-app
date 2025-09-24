@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import graphql.execution.DataFetcherResult;
@@ -15,9 +15,10 @@ import io.spring.application.CursorPager;
 import io.spring.application.data.ArticleData;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
-import io.spring.graphql.SecurityUtil;
 import io.spring.graphql.types.ArticlesConnection;
 import io.spring.graphql.types.Profile;
+import java.util.Collections;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,17 +26,12 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.Optional;
-
 @ExtendWith(MockitoExtension.class)
 public class ArticleDatafetcherComprehensiveTest {
 
-  @Mock
-  private ArticleQueryService articleQueryService;
+  @Mock private ArticleQueryService articleQueryService;
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
   private ArticleDatafetcher articleDatafetcher;
   private User testUser;
@@ -60,13 +56,14 @@ public class ArticleDatafetcherComprehensiveTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
+            eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(10, null, null, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -88,13 +85,14 @@ public class ArticleDatafetcherComprehensiveTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
+            eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(10, null, null, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -116,20 +114,20 @@ public class ArticleDatafetcherComprehensiveTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
+            eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(null, null, 10, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(null, null, 10, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
       assertThat(result.getData().getEdges()).isEmpty();
     }
   }
-
 
   @Test
   public void getFeed_should_handle_empty_result() {
@@ -143,13 +141,14 @@ public class ArticleDatafetcherComprehensiveTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findUserFeedWithCursor(
-        any(User.class), any(CursorPageParameter.class)))
+            any(User.class), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getFeed(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -169,13 +168,14 @@ public class ArticleDatafetcherComprehensiveTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findUserFeedWithCursor(
-        any(User.class), any(CursorPageParameter.class)))
+            any(User.class), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(null, null, 10, "1640995200000", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getFeed(null, null, 10, "1640995200000", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();

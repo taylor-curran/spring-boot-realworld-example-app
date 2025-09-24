@@ -10,7 +10,7 @@ public class PageCursorEdgeCasesTest {
   @Test
   void should_store_and_retrieve_string_data() {
     TestPageCursor cursor = new TestPageCursor("test-data");
-    
+
     assertThat(cursor.getData()).isEqualTo("test-data");
     assertThat(cursor.toString()).isEqualTo("test-data");
   }
@@ -19,7 +19,7 @@ public class PageCursorEdgeCasesTest {
   void should_store_and_retrieve_datetime_data() {
     DateTime now = DateTime.now();
     TestPageCursor cursor = new TestPageCursor(now);
-    
+
     assertThat(cursor.getData()).isEqualTo(now);
     assertThat(cursor.toString()).isEqualTo(now.toString());
   }
@@ -27,7 +27,7 @@ public class PageCursorEdgeCasesTest {
   @Test
   void should_store_and_retrieve_integer_data() {
     TestPageCursor cursor = new TestPageCursor(42);
-    
+
     assertThat(cursor.getData()).isEqualTo(42);
     assertThat(cursor.toString()).isEqualTo("42");
   }
@@ -35,14 +35,14 @@ public class PageCursorEdgeCasesTest {
   @Test
   void should_handle_null_data() {
     TestPageCursor cursor = new TestPageCursor(null);
-    
+
     assertThat(cursor.getData()).isNull();
   }
 
   @Test
   void should_handle_empty_string_data() {
     TestPageCursor cursor = new TestPageCursor("");
-    
+
     assertThat(cursor.getData()).isEqualTo("");
     assertThat(cursor.toString()).isEqualTo("");
   }
@@ -51,7 +51,7 @@ public class PageCursorEdgeCasesTest {
   void should_handle_complex_object_data() {
     ComplexData data = new ComplexData("name", 123);
     TestPageCursor cursor = new TestPageCursor(data);
-    
+
     assertThat(cursor.getData()).isEqualTo(data);
     assertThat(cursor.toString()).isEqualTo("ComplexData{name='name', value=123}");
   }

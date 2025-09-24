@@ -18,19 +18,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class DuplicatedEmailValidatorTest {
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private ConstraintValidatorContext context;
+  @Mock private ConstraintValidatorContext context;
 
-  @InjectMocks
-  private DuplicatedEmailValidator validator;
+  @InjectMocks private DuplicatedEmailValidator validator;
 
   @BeforeEach
   public void setUp() {
     try {
-      java.lang.reflect.Field field = DuplicatedEmailValidator.class.getDeclaredField("userRepository");
+      java.lang.reflect.Field field =
+          DuplicatedEmailValidator.class.getDeclaredField("userRepository");
       field.setAccessible(true);
       field.set(validator, userRepository);
     } catch (Exception e) {
@@ -49,7 +47,8 @@ public class DuplicatedEmailValidatorTest {
 
   @Test
   public void should_be_invalid_when_email_already_exists() {
-    User existingUser = new User("existing@example.com", "existinguser", "password", "bio", "image");
+    User existingUser =
+        new User("existing@example.com", "existinguser", "password", "bio", "image");
     when(userRepository.findByEmail("existing@example.com")).thenReturn(Optional.of(existingUser));
 
     boolean result = validator.isValid("existing@example.com", context);

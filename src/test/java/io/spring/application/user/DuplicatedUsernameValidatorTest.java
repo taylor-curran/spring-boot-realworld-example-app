@@ -18,19 +18,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class DuplicatedUsernameValidatorTest {
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private ConstraintValidatorContext context;
+  @Mock private ConstraintValidatorContext context;
 
-  @InjectMocks
-  private DuplicatedUsernameValidator validator;
+  @InjectMocks private DuplicatedUsernameValidator validator;
 
   @BeforeEach
   public void setUp() {
     try {
-      java.lang.reflect.Field field = DuplicatedUsernameValidator.class.getDeclaredField("userRepository");
+      java.lang.reflect.Field field =
+          DuplicatedUsernameValidator.class.getDeclaredField("userRepository");
       field.setAccessible(true);
       field.set(validator, userRepository);
     } catch (Exception e) {

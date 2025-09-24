@@ -18,10 +18,12 @@ public class AuthenticationExceptionTest {
 
   @Test
   public void should_be_throwable() {
-    assertThatThrownBy(() -> {
-      throw new AuthenticationException();
-    }).isInstanceOf(AuthenticationException.class)
-      .isInstanceOf(RuntimeException.class);
+    assertThatThrownBy(
+            () -> {
+              throw new AuthenticationException();
+            })
+        .isInstanceOf(AuthenticationException.class)
+        .isInstanceOf(RuntimeException.class);
   }
 
   @Test
@@ -74,7 +76,7 @@ public class AuthenticationExceptionTest {
   @Test
   public void should_support_exception_chaining() {
     RuntimeException cause = new RuntimeException("Original cause");
-    
+
     try {
       try {
         throw cause;
@@ -97,7 +99,9 @@ public class AuthenticationExceptionTest {
       exceptionCaught = true;
       assertThat(e).isInstanceOf(AuthenticationException.class);
     } catch (RuntimeException e) {
-      assertThat(false).as("Should have caught AuthenticationException, not RuntimeException").isTrue();
+      assertThat(false)
+          .as("Should have caught AuthenticationException, not RuntimeException")
+          .isTrue();
     }
 
     assertThat(exceptionCaught).isTrue();
@@ -105,10 +109,12 @@ public class AuthenticationExceptionTest {
 
   @Test
   public void should_work_with_exception_handling_patterns() {
-    assertThatThrownBy(() -> {
-      throw new AuthenticationException();
-    }).isExactlyInstanceOf(AuthenticationException.class)
-      .hasMessage(null)
-      .hasNoCause();
+    assertThatThrownBy(
+            () -> {
+              throw new AuthenticationException();
+            })
+        .isExactlyInstanceOf(AuthenticationException.class)
+        .hasMessage(null)
+        .hasNoCause();
   }
 }

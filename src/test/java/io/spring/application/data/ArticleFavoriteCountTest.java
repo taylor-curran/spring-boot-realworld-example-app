@@ -56,7 +56,8 @@ public class ArticleFavoriteCountTest {
 
   @Test
   public void should_handle_large_count() {
-    ArticleFavoriteCount favoriteCount = new ArticleFavoriteCount("popular-article", Integer.MAX_VALUE);
+    ArticleFavoriteCount favoriteCount =
+        new ArticleFavoriteCount("popular-article", Integer.MAX_VALUE);
 
     assertThat(favoriteCount.getId()).isEqualTo("popular-article");
     assertThat(favoriteCount.getCount()).isEqualTo(Integer.MAX_VALUE);
@@ -122,7 +123,7 @@ public class ArticleFavoriteCountTest {
   @Test
   public void should_handle_equals_edge_cases() {
     ArticleFavoriteCount favoriteCount = new ArticleFavoriteCount("article123", 5);
-    
+
     assertThat(favoriteCount).isEqualTo(favoriteCount);
     assertThat(favoriteCount).isNotEqualTo(null);
     assertThat(favoriteCount).isNotEqualTo("not an ArticleFavoriteCount");
@@ -151,7 +152,7 @@ public class ArticleFavoriteCountTest {
 
     assertThat(favoriteCount1.hashCode()).isEqualTo(favoriteCount2.hashCode());
     assertThat(favoriteCount3.hashCode()).isEqualTo(favoriteCount4.hashCode());
-    
+
     int hash1 = favoriteCount1.hashCode();
     int hash2 = favoriteCount1.hashCode();
     assertThat(hash1).isEqualTo(hash2);
