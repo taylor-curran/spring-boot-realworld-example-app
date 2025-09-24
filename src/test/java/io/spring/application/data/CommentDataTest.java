@@ -138,4 +138,83 @@ public class CommentDataTest {
     assertThat(toString).contains("test-id");
     assertThat(toString).contains("Test comment");
   }
+
+  @Test
+  public void should_handle_equals_with_different_types() {
+    CommentData comment = createSampleCommentData();
+    
+    assertThat(comment.equals(null)).isFalse();
+    assertThat(comment.equals("not a comment")).isFalse();
+    assertThat(comment.equals(new Object())).isFalse();
+  }
+
+  @Test
+  public void should_handle_equals_with_different_fields() {
+    DateTime now = DateTime.now();
+    ProfileData profile = createSampleProfileData();
+    
+    CommentData comment1 = new CommentData("id1", "body1", "article1", now, now, profile);
+    
+    CommentData comment2 = new CommentData("id2", "body1", "article1", now, now, profile);
+    assertThat(comment1).isNotEqualTo(comment2);
+    
+    CommentData comment3 = new CommentData("id1", "body2", "article1", now, now, profile);
+    assertThat(comment1).isNotEqualTo(comment3);
+    
+    CommentData comment4 = new CommentData("id1", "body1", "article2", now, now, profile);
+    assertThat(comment1).isNotEqualTo(comment4);
+    
+    CommentData comment5 = new CommentData("id1", "body1", "article1", now.plusHours(1), now, profile);
+    assertThat(comment1).isNotEqualTo(comment5);
+    
+    ProfileData differentProfile = new ProfileData("user2", "testuser2", "bio2", "image2.jpg", true);
+    CommentData comment6 = new CommentData("id1", "body1", "article1", now, now, differentProfile);
+    assertThat(comment1).isNotEqualTo(comment6);
+  }
+
+  @Test
+  public void should_handle_equals_with_null_fields() {
+    CommentData comment1 = new CommentData(null, null, null, null, null, null);
+    CommentData comment2 = new CommentData(null, null, null, null, null, null);
+    CommentData comment3 = new CommentData("id", null, null, null, null, null);
+    
+    assertThat(comment1).isEqualTo(comment2);
+    assertThat(comment1).isNotEqualTo(comment3);
+    assertThat(comment1.hashCode()).isEqualTo(comment2.hashCode());
+  }
+
+  @Test
+  public void should_handle_can_equal_method() {
+    CommentData comment = createSampleCommentData();
+    
+    assertThat(comment.canEqual(comment)).isTrue();
+    assertThat(comment.canEqual(new CommentData())).isTrue();
+    assertThat(comment.canEqual("not a comment")).isFalse();
+    assertThat(comment.canEqual(null)).isFalse();
+  }
+
+  @Test
+  public void should_handle_hash_code_consistency() {
+    DateTime now = DateTime.now();
+    ProfileData profile = createSampleProfileData();
+    
+    CommentData comment1 = new CommentData("id1", "body1", "article1", now, now, profile);
+    CommentData comment2 = new CommentData("id1", "body1", "article1", now, now, profile);
+    
+    assertThat(comment1.hashCode()).isEqualTo(comment2.hashCode());
+    
+    int hash1 = comment1.hashCode();
+    int hash2 = comment1.hashCode();
+    assertThat(hash1).isEqualTo(hash2);
+  }
+
+  private CommentData createSampleCommentData() {
+    DateTime now = DateTime.now();
+    ProfileData profile = createSampleProfileData();
+    return new CommentData("id", "body", "article-id", now, now, profile);
+  }
+
+  private ProfileData createSampleProfileData() {
+    return new ProfileData("user-id", "testuser", "Test Bio", "image.jpg", false);
+  }
 }

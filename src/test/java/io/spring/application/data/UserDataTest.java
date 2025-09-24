@@ -121,4 +121,70 @@ public class UserDataTest {
     assertThat(toString).contains("testuser");
     assertThat(toString).contains("test@example.com");
   }
+
+  @Test
+  public void should_handle_equals_with_different_types() {
+    UserData user = createSampleUserData();
+    
+    assertThat(user.equals(null)).isFalse();
+    assertThat(user.equals("not a user")).isFalse();
+    assertThat(user.equals(new Object())).isFalse();
+  }
+
+  @Test
+  public void should_handle_equals_with_different_fields() {
+    UserData user1 = new UserData("id1", "user1@example.com", "username1", "bio1", "image1.jpg");
+    
+    UserData user2 = new UserData("id2", "user1@example.com", "username1", "bio1", "image1.jpg");
+    assertThat(user1).isNotEqualTo(user2);
+    
+    UserData user3 = new UserData("id1", "user2@example.com", "username1", "bio1", "image1.jpg");
+    assertThat(user1).isNotEqualTo(user3);
+    
+    UserData user4 = new UserData("id1", "user1@example.com", "username2", "bio1", "image1.jpg");
+    assertThat(user1).isNotEqualTo(user4);
+    
+    UserData user5 = new UserData("id1", "user1@example.com", "username1", "bio2", "image1.jpg");
+    assertThat(user1).isNotEqualTo(user5);
+    
+    UserData user6 = new UserData("id1", "user1@example.com", "username1", "bio1", "image2.jpg");
+    assertThat(user1).isNotEqualTo(user6);
+  }
+
+  @Test
+  public void should_handle_equals_with_null_fields() {
+    UserData user1 = new UserData(null, null, null, null, null);
+    UserData user2 = new UserData(null, null, null, null, null);
+    UserData user3 = new UserData("id", null, null, null, null);
+    
+    assertThat(user1).isEqualTo(user2);
+    assertThat(user1).isNotEqualTo(user3);
+    assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
+  }
+
+  @Test
+  public void should_handle_can_equal_method() {
+    UserData user = createSampleUserData();
+    
+    assertThat(user.canEqual(user)).isTrue();
+    assertThat(user.canEqual(new UserData())).isTrue();
+    assertThat(user.canEqual("not a user")).isFalse();
+    assertThat(user.canEqual(null)).isFalse();
+  }
+
+  @Test
+  public void should_handle_hash_code_consistency() {
+    UserData user1 = new UserData("id1", "user1@example.com", "username1", "bio1", "image1.jpg");
+    UserData user2 = new UserData("id1", "user1@example.com", "username1", "bio1", "image1.jpg");
+    
+    assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
+    
+    int hash1 = user1.hashCode();
+    int hash2 = user1.hashCode();
+    assertThat(hash1).isEqualTo(hash2);
+  }
+
+  private UserData createSampleUserData() {
+    return new UserData("id", "test@example.com", "testuser", "bio", "image.jpg");
+  }
 }

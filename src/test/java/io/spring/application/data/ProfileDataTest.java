@@ -111,6 +111,64 @@ public class ProfileDataTest {
   }
 
   @Test
+  public void should_handle_equals_edge_cases() {
+    ProfileData profileData = new ProfileData("id", "username", "bio", "image.jpg", true);
+    
+    assertThat(profileData).isEqualTo(profileData);
+    assertThat(profileData).isNotEqualTo(null);
+    assertThat(profileData).isNotEqualTo("not a ProfileData");
+    
+    ProfileData differentId = new ProfileData("different-id", "username", "bio", "image.jpg", true);
+    assertThat(profileData).isNotEqualTo(differentId);
+    
+    ProfileData differentUsername = new ProfileData("id", "different-username", "bio", "image.jpg", true);
+    assertThat(profileData).isNotEqualTo(differentUsername);
+    
+    ProfileData differentBio = new ProfileData("id", "username", "different-bio", "image.jpg", true);
+    assertThat(profileData).isNotEqualTo(differentBio);
+    
+    ProfileData differentImage = new ProfileData("id", "username", "bio", "different-image.jpg", true);
+    assertThat(profileData).isNotEqualTo(differentImage);
+    
+    ProfileData differentFollowing = new ProfileData("id", "username", "bio", "image.jpg", false);
+    assertThat(profileData).isNotEqualTo(differentFollowing);
+  }
+
+  @Test
+  public void should_handle_equals_with_null_fields() {
+    ProfileData profileWithNulls = new ProfileData(null, null, null, null, false);
+    ProfileData anotherWithNulls = new ProfileData(null, null, null, null, false);
+    
+    assertThat(profileWithNulls).isEqualTo(anotherWithNulls);
+    assertThat(profileWithNulls.hashCode()).isEqualTo(anotherWithNulls.hashCode());
+    
+    ProfileData profileWithId = new ProfileData("id", null, null, null, false);
+    assertThat(profileWithNulls).isNotEqualTo(profileWithId);
+    
+    ProfileData profileWithUsername = new ProfileData(null, "username", null, null, false);
+    assertThat(profileWithNulls).isNotEqualTo(profileWithUsername);
+    
+    ProfileData profileWithBio = new ProfileData(null, null, "bio", null, false);
+    assertThat(profileWithNulls).isNotEqualTo(profileWithBio);
+    
+    ProfileData profileWithImage = new ProfileData(null, null, null, "image.jpg", false);
+    assertThat(profileWithNulls).isNotEqualTo(profileWithImage);
+  }
+
+  @Test
+  public void should_handle_hashcode_consistency() {
+    ProfileData profileData = new ProfileData("id", "username", "bio", "image.jpg", true);
+    
+    int hashCode1 = profileData.hashCode();
+    int hashCode2 = profileData.hashCode();
+    
+    assertThat(hashCode1).isEqualTo(hashCode2);
+    
+    ProfileData identicalProfile = new ProfileData("id", "username", "bio", "image.jpg", true);
+    assertThat(profileData.hashCode()).isEqualTo(identicalProfile.hashCode());
+  }
+
+  @Test
   public void should_handle_toString() {
     ProfileData profileData = new ProfileData("id", "testuser", "bio", "image.jpg", false);
 
