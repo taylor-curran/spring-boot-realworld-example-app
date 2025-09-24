@@ -153,6 +153,96 @@ class ArticleFavoriteTest {
     }
 
     @Test
+    void shouldTestEqualsWithNullFields() {
+        ArticleFavorite favorite1 = new ArticleFavorite(null, null);
+        ArticleFavorite favorite2 = new ArticleFavorite(null, null);
+        ArticleFavorite favorite3 = new ArticleFavorite("article123", null);
+        ArticleFavorite favorite4 = new ArticleFavorite(null, "user456");
+
+        assertEquals(favorite1, favorite2);
+        assertEquals(favorite1.hashCode(), favorite2.hashCode());
+        assertNotEquals(favorite1, favorite3);
+        assertNotEquals(favorite1, favorite4);
+        assertNotEquals(favorite3, favorite4);
+    }
+
+    @Test
+    void shouldTestEqualsWithSelf() {
+        ArticleFavorite favorite = new ArticleFavorite("article123", "user456");
+        
+        assertEquals(favorite, favorite);
+        assertTrue(favorite.equals(favorite));
+    }
+
+    @Test
+    void shouldTestEqualsWithNull() {
+        ArticleFavorite favorite = new ArticleFavorite("article123", "user456");
+        
+        assertNotEquals(favorite, null);
+        assertFalse(favorite.equals(null));
+    }
+
+    @Test
+    void shouldTestEqualsWithDifferentClass() {
+        ArticleFavorite favorite = new ArticleFavorite("article123", "user456");
+        String other = "not an ArticleFavorite";
+        
+        assertNotEquals(favorite, other);
+        assertFalse(favorite.equals(other));
+    }
+
+    @Test
+    void shouldTestCanEqual() {
+        ArticleFavorite favorite1 = new ArticleFavorite("article123", "user456");
+        ArticleFavorite favorite2 = new ArticleFavorite("article456", "user789");
+        String other = "not an ArticleFavorite";
+        
+        assertTrue(favorite1.canEqual(favorite2));
+        assertFalse(favorite1.canEqual(other));
+    }
+
+    @Test
+    void shouldTestToString() {
+        ArticleFavorite favorite = new ArticleFavorite("article123", "user456");
+        
+        String toString = favorite.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("ArticleFavorite"));
+    }
+
+    @Test
+    void shouldTestToStringWithNullFields() {
+        ArticleFavorite favorite = new ArticleFavorite(null, null);
+        
+        String toString = favorite.toString();
+        assertNotNull(toString);
+        assertTrue(toString.contains("ArticleFavorite"));
+    }
+
+    @Test
+    void shouldTestHashCodeConsistency() {
+        ArticleFavorite favorite = new ArticleFavorite("article123", "user456");
+        
+        int hashCode1 = favorite.hashCode();
+        int hashCode2 = favorite.hashCode();
+        
+        assertEquals(hashCode1, hashCode2);
+    }
+
+    @Test
+    void shouldTestHashCodeWithNullFields() {
+        ArticleFavorite favorite1 = new ArticleFavorite(null, null);
+        ArticleFavorite favorite2 = new ArticleFavorite(null, null);
+        ArticleFavorite favorite3 = new ArticleFavorite("article123", null);
+        ArticleFavorite favorite4 = new ArticleFavorite(null, "user456");
+        
+        assertEquals(favorite1.hashCode(), favorite2.hashCode());
+        assertNotEquals(favorite1.hashCode(), favorite3.hashCode());
+        assertNotEquals(favorite1.hashCode(), favorite4.hashCode());
+        assertNotEquals(favorite3.hashCode(), favorite4.hashCode());
+    }
+
+    @Test
     void shouldTestNoArgsConstructor() {
         ArticleFavorite favorite = new ArticleFavorite();
 
