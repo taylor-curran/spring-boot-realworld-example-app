@@ -19,19 +19,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class DuplicatedArticleValidatorTest {
 
-  @Mock
-  private ArticleQueryService articleQueryService;
+  @Mock private ArticleQueryService articleQueryService;
 
-  @Mock
-  private ConstraintValidatorContext context;
+  @Mock private ConstraintValidatorContext context;
 
-  @InjectMocks
-  private DuplicatedArticleValidator validator;
+  @InjectMocks private DuplicatedArticleValidator validator;
 
   @BeforeEach
   public void setUp() {
     try {
-      java.lang.reflect.Field field = DuplicatedArticleValidator.class.getDeclaredField("articleQueryService");
+      java.lang.reflect.Field field =
+          DuplicatedArticleValidator.class.getDeclaredField("articleQueryService");
       field.setAccessible(true);
       field.set(validator, articleQueryService);
     } catch (Exception e) {
@@ -50,8 +48,10 @@ public class DuplicatedArticleValidatorTest {
 
   @Test
   public void should_be_invalid_when_article_already_exists() {
-    ArticleData existingArticle = new ArticleData("id", "slug", "title", "desc", "body", false, 0, null, null, null, null);
-    when(articleQueryService.findBySlug(any(String.class), eq(null))).thenReturn(Optional.of(existingArticle));
+    ArticleData existingArticle =
+        new ArticleData("id", "slug", "title", "desc", "body", false, 0, null, null, null, null);
+    when(articleQueryService.findBySlug(any(String.class), eq(null)))
+        .thenReturn(Optional.of(existingArticle));
 
     boolean result = validator.isValid("Existing Article Title", context);
 
@@ -134,8 +134,10 @@ public class DuplicatedArticleValidatorTest {
 
   @Test
   public void should_be_invalid_when_similar_title_exists() {
-    ArticleData existingArticle = new ArticleData("id", "slug", "title", "desc", "body", false, 0, null, null, null, null);
-    when(articleQueryService.findBySlug(any(String.class), eq(null))).thenReturn(Optional.of(existingArticle));
+    ArticleData existingArticle =
+        new ArticleData("id", "slug", "title", "desc", "body", false, 0, null, null, null, null);
+    when(articleQueryService.findBySlug(any(String.class), eq(null)))
+        .thenReturn(Optional.of(existingArticle));
 
     boolean result = validator.isValid("Similar Article Title", context);
 

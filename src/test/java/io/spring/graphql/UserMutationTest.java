@@ -3,15 +3,10 @@ package io.spring.graphql;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.HashSet;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import com.netflix.graphql.dgs.exceptions.DgsEntityNotFoundException;
 import graphql.execution.DataFetcherResult;
 import io.spring.api.exception.InvalidAuthenticationException;
 import io.spring.application.user.RegisterParam;
@@ -23,6 +18,8 @@ import io.spring.graphql.types.CreateUserInput;
 import io.spring.graphql.types.UpdateUserInput;
 import io.spring.graphql.types.UserPayload;
 import io.spring.graphql.types.UserResult;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Assertions;
@@ -34,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,23 +39,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 public class UserMutationTest {
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private PasswordEncoder passwordEncoder;
+  @Mock private PasswordEncoder passwordEncoder;
 
-  @Mock
-  private UserService userService;
+  @Mock private UserService userService;
 
-  @Mock
-  private SecurityContext securityContext;
+  @Mock private SecurityContext securityContext;
 
-  @Mock
-  private Authentication authentication;
+  @Mock private Authentication authentication;
 
-  @InjectMocks
-  private UserMutation userMutation;
+  @InjectMocks private UserMutation userMutation;
 
   private User testUser;
 
@@ -69,11 +61,12 @@ public class UserMutationTest {
 
   @Test
   public void should_create_user_successfully() {
-    CreateUserInput input = CreateUserInput.newBuilder()
-        .email("test@example.com")
-        .username("testuser")
-        .password("password123")
-        .build();
+    CreateUserInput input =
+        CreateUserInput.newBuilder()
+            .email("test@example.com")
+            .username("testuser")
+            .password("password123")
+            .build();
 
     when(userService.createUser(any(RegisterParam.class))).thenReturn(testUser);
 
@@ -87,11 +80,12 @@ public class UserMutationTest {
 
   @Test
   public void should_handle_constraint_violation_on_user_creation() {
-    CreateUserInput input = CreateUserInput.newBuilder()
-        .email("invalid-email")
-        .username("testuser")
-        .password("password123")
-        .build();
+    CreateUserInput input =
+        CreateUserInput.newBuilder()
+            .email("invalid-email")
+            .username("testuser")
+            .password("password123")
+            .build();
 
     when(userService.createUser(any(RegisterParam.class)))
         .thenThrow(new ConstraintViolationException("Validation failed", new HashSet<>()));
@@ -157,13 +151,14 @@ public class UserMutationTest {
 
   @Test
   public void should_update_user_successfully() {
-    UpdateUserInput input = UpdateUserInput.newBuilder()
-        .username("newusername")
-        .email("newemail@example.com")
-        .bio("New bio")
-        .password("newpassword")
-        .image("newimage.jpg")
-        .build();
+    UpdateUserInput input =
+        UpdateUserInput.newBuilder()
+            .username("newusername")
+            .email("newemail@example.com")
+            .bio("New bio")
+            .password("newpassword")
+            .image("newimage.jpg")
+            .build();
 
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.getPrincipal()).thenReturn(testUser);
@@ -178,11 +173,14 @@ public class UserMutationTest {
 
   @Test
   public void should_return_null_for_anonymous_user_update() {
-    UpdateUserInput input = UpdateUserInput.newBuilder()
-        .username("newusername")
-        .build();
+    UpdateUserInput input = UpdateUserInput.newBuilder().username("newusername").build();
 
-    when(securityContext.getAuthentication()).thenReturn(new AnonymousAuthenticationToken("key", "principal", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
+    when(securityContext.getAuthentication())
+        .thenReturn(
+            new AnonymousAuthenticationToken(
+                "key",
+                "principal",
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
 
     DataFetcherResult<UserPayload> result = userMutation.updateUser(input);
 
@@ -192,9 +190,7 @@ public class UserMutationTest {
 
   @Test
   public void should_return_null_for_null_authentication() {
-    UpdateUserInput input = UpdateUserInput.newBuilder()
-        .username("newusername")
-        .build();
+    UpdateUserInput input = UpdateUserInput.newBuilder().username("newusername").build();
 
     when(securityContext.getAuthentication()).thenReturn(null);
 
@@ -209,9 +205,7 @@ public class UserMutationTest {
 
   @Test
   public void should_return_null_for_null_principal() {
-    UpdateUserInput input = UpdateUserInput.newBuilder()
-        .username("newusername")
-        .build();
+    UpdateUserInput input = UpdateUserInput.newBuilder().username("newusername").build();
 
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.getPrincipal()).thenReturn(null);

@@ -4,7 +4,6 @@ import io.spring.application.CommentQueryService;
 import io.spring.application.CursorPageParameter;
 import io.spring.application.CursorPager;
 import io.spring.application.CursorPager.Direction;
-import io.spring.application.PageCursor;
 import io.spring.application.data.CommentData;
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
@@ -124,9 +123,11 @@ public class CommentQueryServiceTest extends DbTestBase {
     Article article = new Article("title", "desc", "body", Arrays.asList("java"), user.getId());
     articleRepository.save(article);
 
-    CursorPageParameter<org.joda.time.DateTime> page = new CursorPageParameter<>(null, 10, Direction.NEXT);
-    CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
-    
+    CursorPageParameter<org.joda.time.DateTime> page =
+        new CursorPageParameter<>(null, 10, Direction.NEXT);
+    CursorPager<CommentData> result =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
+
     Assertions.assertTrue(result.getData().isEmpty());
     Assertions.assertFalse(result.hasNext());
   }
@@ -139,9 +140,11 @@ public class CommentQueryServiceTest extends DbTestBase {
     Comment comment = new Comment("content", user.getId(), article.getId());
     commentRepository.save(comment);
 
-    CursorPageParameter<org.joda.time.DateTime> page = new CursorPageParameter<>(null, 10, Direction.NEXT);
-    CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(article.getId(), null, page);
-    
+    CursorPageParameter<org.joda.time.DateTime> page =
+        new CursorPageParameter<>(null, 10, Direction.NEXT);
+    CursorPager<CommentData> result =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), null, page);
+
     Assertions.assertEquals(result.getData().size(), 1);
     Assertions.assertFalse(result.getData().get(0).getProfileData().isFollowing());
   }
@@ -162,9 +165,11 @@ public class CommentQueryServiceTest extends DbTestBase {
     Comment comment3 = new Comment("content3", user.getId(), article.getId());
     commentRepository.save(comment3);
 
-    CursorPageParameter<org.joda.time.DateTime> page = new CursorPageParameter<>(null, 2, Direction.NEXT);
-    CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
-    
+    CursorPageParameter<org.joda.time.DateTime> page =
+        new CursorPageParameter<>(null, 2, Direction.NEXT);
+    CursorPager<CommentData> result =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
+
     Assertions.assertEquals(result.getData().size(), 2);
     Assertions.assertTrue(result.hasNext());
     Assertions.assertNotNull(result.getEndCursor());
@@ -180,9 +185,11 @@ public class CommentQueryServiceTest extends DbTestBase {
     Comment comment2 = new Comment("content2", user.getId(), article.getId());
     commentRepository.save(comment2);
 
-    CursorPageParameter<org.joda.time.DateTime> page = new CursorPageParameter<>(null, 10, Direction.PREV);
-    CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
-    
+    CursorPageParameter<org.joda.time.DateTime> page =
+        new CursorPageParameter<>(null, 10, Direction.PREV);
+    CursorPager<CommentData> result =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
+
     Assertions.assertEquals(result.getData().size(), 2);
     Assertions.assertFalse(result.hasPrevious());
   }
@@ -199,16 +206,21 @@ public class CommentQueryServiceTest extends DbTestBase {
     Comment comment3 = new Comment("content3", user.getId(), article.getId());
     commentRepository.save(comment3);
 
-    CursorPageParameter<org.joda.time.DateTime> firstPage = new CursorPageParameter<>(null, 2, Direction.NEXT);
-    CursorPager<CommentData> firstResult = commentQueryService.findByArticleIdWithCursor(article.getId(), user, firstPage);
-    
+    CursorPageParameter<org.joda.time.DateTime> firstPage =
+        new CursorPageParameter<>(null, 2, Direction.NEXT);
+    CursorPager<CommentData> firstResult =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, firstPage);
+
     Assertions.assertEquals(firstResult.getData().size(), 2);
     Assertions.assertTrue(firstResult.hasNext());
-    
-    org.joda.time.DateTime endCursor = (org.joda.time.DateTime) firstResult.getEndCursor().getData();
-    CursorPageParameter<org.joda.time.DateTime> secondPage = new CursorPageParameter<>(endCursor, 2, Direction.NEXT);
-    CursorPager<CommentData> secondResult = commentQueryService.findByArticleIdWithCursor(article.getId(), user, secondPage);
-    
+
+    org.joda.time.DateTime endCursor =
+        (org.joda.time.DateTime) firstResult.getEndCursor().getData();
+    CursorPageParameter<org.joda.time.DateTime> secondPage =
+        new CursorPageParameter<>(endCursor, 2, Direction.NEXT);
+    CursorPager<CommentData> secondResult =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, secondPage);
+
     Assertions.assertEquals(secondResult.getData().size(), 1);
     Assertions.assertFalse(secondResult.hasNext());
   }
@@ -221,9 +233,11 @@ public class CommentQueryServiceTest extends DbTestBase {
     Comment comment = new Comment("content", user.getId(), article.getId());
     commentRepository.save(comment);
 
-    CursorPageParameter<org.joda.time.DateTime> page = new CursorPageParameter<>(null, 0, Direction.NEXT);
-    CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
-    
+    CursorPageParameter<org.joda.time.DateTime> page =
+        new CursorPageParameter<>(null, 0, Direction.NEXT);
+    CursorPager<CommentData> result =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
+
     Assertions.assertEquals(result.getData().size(), 1);
     Assertions.assertFalse(result.hasNext());
   }
@@ -238,9 +252,11 @@ public class CommentQueryServiceTest extends DbTestBase {
     Comment comment2 = new Comment("content2", user.getId(), article.getId());
     commentRepository.save(comment2);
 
-    CursorPageParameter<org.joda.time.DateTime> page = new CursorPageParameter<>(null, 1000, Direction.NEXT);
-    CursorPager<CommentData> result = commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
-    
+    CursorPageParameter<org.joda.time.DateTime> page =
+        new CursorPageParameter<>(null, 1000, Direction.NEXT);
+    CursorPager<CommentData> result =
+        commentQueryService.findByArticleIdWithCursor(article.getId(), user, page);
+
     Assertions.assertEquals(result.getData().size(), 2);
     Assertions.assertFalse(result.hasNext());
   }

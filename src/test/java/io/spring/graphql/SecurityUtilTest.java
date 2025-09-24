@@ -25,9 +25,10 @@ public class SecurityUtilTest {
   @Test
   public void should_return_current_user_when_authenticated() {
     User mockUser = mock(User.class);
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        mockUser, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
-    
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(
+            mockUser, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
@@ -40,9 +41,10 @@ public class SecurityUtilTest {
 
   @Test
   public void should_return_empty_when_anonymous_authentication() {
-    AnonymousAuthenticationToken anonymousAuth = new AnonymousAuthenticationToken(
-        "key", "anonymous", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
-    
+    AnonymousAuthenticationToken anonymousAuth =
+        new AnonymousAuthenticationToken(
+            "key", "anonymous", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(anonymousAuth);
     SecurityContextHolder.setContext(securityContext);
@@ -54,9 +56,10 @@ public class SecurityUtilTest {
 
   @Test
   public void should_return_empty_when_principal_is_null() {
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        null, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
-    
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(
+            null, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
@@ -97,10 +100,11 @@ public class SecurityUtilTest {
     User mockUser = mock(User.class);
     when(mockUser.getId()).thenReturn("user123");
     when(mockUser.getUsername()).thenReturn("testuser");
-    
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        mockUser, "password", AuthorityUtils.createAuthorityList("ROLE_USER"));
-    
+
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(
+            mockUser, "password", AuthorityUtils.createAuthorityList("ROLE_USER"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
@@ -115,9 +119,10 @@ public class SecurityUtilTest {
   @Test
   public void should_handle_authentication_with_credentials() {
     User mockUser = mock(User.class);
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        mockUser, "credentials", AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN"));
-    
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(
+            mockUser, "credentials", AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
@@ -131,9 +136,12 @@ public class SecurityUtilTest {
   @Test
   public void should_handle_multiple_authorities() {
     User mockUser = mock(User.class);
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        mockUser, null, AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR"));
-    
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(
+            mockUser,
+            null,
+            AuthorityUtils.createAuthorityList("ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
@@ -147,9 +155,9 @@ public class SecurityUtilTest {
   @Test
   public void should_handle_empty_authorities() {
     User mockUser = mock(User.class);
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        mockUser, null, AuthorityUtils.NO_AUTHORITIES);
-    
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(mockUser, null, AuthorityUtils.NO_AUTHORITIES);
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(authentication);
     SecurityContextHolder.setContext(securityContext);
@@ -164,12 +172,14 @@ public class SecurityUtilTest {
   public void should_handle_concurrent_access() {
     User mockUser1 = mock(User.class);
     User mockUser2 = mock(User.class);
-    
-    Authentication auth1 = new UsernamePasswordAuthenticationToken(
-        mockUser1, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
-    Authentication auth2 = new UsernamePasswordAuthenticationToken(
-        mockUser2, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
-    
+
+    Authentication auth1 =
+        new UsernamePasswordAuthenticationToken(
+            mockUser1, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
+    Authentication auth2 =
+        new UsernamePasswordAuthenticationToken(
+            mockUser2, null, AuthorityUtils.createAuthorityList("ROLE_USER"));
+
     SecurityContext securityContext = mock(SecurityContext.class);
     when(securityContext.getAuthentication()).thenReturn(auth1);
     SecurityContextHolder.setContext(securityContext);

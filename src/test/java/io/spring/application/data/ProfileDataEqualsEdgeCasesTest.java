@@ -9,7 +9,7 @@ public class ProfileDataEqualsEdgeCasesTest {
   @Test
   void should_handle_equals_with_same_instance() {
     ProfileData profile = createSampleProfileData();
-    
+
     assertThat(profile.equals(profile)).isTrue();
     assertThat(profile.hashCode()).isEqualTo(profile.hashCode());
   }
@@ -19,7 +19,7 @@ public class ProfileDataEqualsEdgeCasesTest {
     ProfileData profile1 = new ProfileData("id", "testuser", null, "image.jpg", false);
     ProfileData profile2 = new ProfileData("id", "testuser", null, "image.jpg", false);
     ProfileData profile3 = new ProfileData("id", "testuser", "bio", "image.jpg", false);
-    
+
     assertThat(profile1).isEqualTo(profile2);
     assertThat(profile1).isNotEqualTo(profile3);
   }
@@ -29,7 +29,7 @@ public class ProfileDataEqualsEdgeCasesTest {
     ProfileData profile1 = new ProfileData("id", "testuser", "bio", null, false);
     ProfileData profile2 = new ProfileData("id", "testuser", "bio", null, false);
     ProfileData profile3 = new ProfileData("id", "testuser", "bio", "image.jpg", false);
-    
+
     assertThat(profile1).isEqualTo(profile2);
     assertThat(profile1).isNotEqualTo(profile3);
   }
@@ -38,7 +38,7 @@ public class ProfileDataEqualsEdgeCasesTest {
   void should_handle_equals_with_different_following_status() {
     ProfileData profile1 = new ProfileData("id", "testuser", "bio", "image.jpg", true);
     ProfileData profile2 = new ProfileData("id", "testuser", "bio", "image.jpg", false);
-    
+
     assertThat(profile1).isNotEqualTo(profile2);
   }
 
@@ -46,7 +46,7 @@ public class ProfileDataEqualsEdgeCasesTest {
   void should_handle_equals_with_different_usernames() {
     ProfileData profile1 = new ProfileData("id", "testuser1", "bio", "image.jpg", false);
     ProfileData profile2 = new ProfileData("id", "testuser2", "bio", "image.jpg", false);
-    
+
     assertThat(profile1).isNotEqualTo(profile2);
   }
 
@@ -55,7 +55,7 @@ public class ProfileDataEqualsEdgeCasesTest {
     ProfileData profile1 = new ProfileData(null, null, null, null, false);
     ProfileData profile2 = new ProfileData(null, null, null, null, false);
     ProfileData profile3 = new ProfileData("id", null, null, null, false);
-    
+
     assertThat(profile1).isEqualTo(profile2);
     assertThat(profile1).isNotEqualTo(profile3);
   }
