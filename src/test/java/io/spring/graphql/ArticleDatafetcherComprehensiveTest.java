@@ -201,6 +201,24 @@ class ArticleDatafetcherComprehensiveTest {
     }
 
     @Test
+    void userFeed_shouldWorkWithLastParameter() {
+        User testUser = new User("test@example.com", "testuser", "password", "bio", "image");
+        when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
+            .thenReturn(cursorPager);
+        
+        DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(
+            null, null, 10, "1640995200000", dgsDataFetchingEnvironment);
+        
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(1, result.getData().getEdges().size());
+        verify(userRepository).findByUsername("testuser");
+        verify(articleQueryService).findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class));
+    }
+
+    @Test
     void userFavorites_shouldReturnFavoriteArticlesWithFirstParameter() {
         try (MockedStatic<SecurityUtil> securityUtilMock = mockStatic(SecurityUtil.class)) {
             securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
@@ -274,6 +292,33 @@ class ArticleDatafetcherComprehensiveTest {
             verify(articleQueryService).findRecentArticlesWithCursor(
                 isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), isNull());
         }
+    }
+
+    @Test
+    void userArticles_shouldWorkWithLastParameter() {
+        try (MockedStatic<SecurityUtil> securityUtilMock = mockStatic(SecurityUtil.class)) {
+            securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
+            when(dgsDataFetchingEnvironment.getSource()).thenReturn(profile);
+            when(articleQueryService.findRecentArticlesWithCursor(
+                isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), eq(testUser)))
+                .thenReturn(cursorPager);
+
+            DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(
+                null, null, 10, "1640995200000", dgsDataFetchingEnvironment);
+
+            assertNotNull(result);
+            assertNotNull(result.getData());
+            assertEquals(1, result.getData().getEdges().size());
+            verify(articleQueryService).findRecentArticlesWithCursor(
+                isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), eq(testUser));
+        }
+    }
+
+    @Test
+    void userArticles_shouldThrowExceptionWhenBothFirstAndLastAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            articleDatafetcher.userArticles(null, null, null, null, dgsDataFetchingEnvironment);
+        });
     }
 
     @Test

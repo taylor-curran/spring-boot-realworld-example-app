@@ -309,4 +309,102 @@ class ArticleDataTest {
         assertEquals(tagList, articleData.getTagList());
         assertEquals(profileData, articleData.getProfileData());
     }
+
+    @Test
+    void shouldTestCanEqualMethod() {
+        ArticleData articleData = new ArticleData("id", "slug", "title", "desc", "body", true, 5, 
+            DateTime.now(), DateTime.now(), Arrays.asList("tag"), 
+            new ProfileData("profile-id", "author", "bio", "image", false));
+        
+        assertTrue(articleData.canEqual(new ArticleData()));
+        assertFalse(articleData.canEqual("not an ArticleData"));
+        assertFalse(articleData.canEqual(null));
+    }
+
+    @Test
+    void shouldTestEqualsWithMixedNullAndNonNullFields() {
+        DateTime now = DateTime.now();
+        ProfileData profile = new ProfileData("profile-id", "author", "bio", "image", false);
+        List<String> tags = Arrays.asList("tag1");
+
+        ArticleData article1 = new ArticleData("id", null, "title", null, "body", true, 5, now, null, tags, null);
+        ArticleData article2 = new ArticleData("id", null, "title", null, "body", true, 5, now, null, tags, null);
+        ArticleData article3 = new ArticleData("id", "slug", "title", null, "body", true, 5, now, null, tags, null);
+        ArticleData article4 = new ArticleData("id", null, "title", "desc", "body", true, 5, now, null, tags, null);
+        ArticleData article5 = new ArticleData("id", null, "title", null, "body", true, 5, now, now, tags, null);
+        ArticleData article6 = new ArticleData("id", null, "title", null, "body", true, 5, now, null, null, null);
+        ArticleData article7 = new ArticleData("id", null, "title", null, "body", true, 5, now, null, tags, profile);
+
+        assertEquals(article1, article2);
+        assertNotEquals(article1, article3);
+        assertNotEquals(article1, article4);
+        assertNotEquals(article1, article5);
+        assertNotEquals(article1, article6);
+        assertNotEquals(article1, article7);
+    }
+
+    @Test
+    void shouldTestEqualsWithNullVsNonNullComparisons() {
+        DateTime now = DateTime.now();
+        ProfileData profile = new ProfileData("profile-id", "author", "bio", "image", false);
+        List<String> tags = Arrays.asList("tag1");
+
+        ArticleData withNullId = new ArticleData(null, "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+        ArticleData withNonNullId = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullSlug = new ArticleData("id", null, "title", "desc", "body", true, 5, now, now, tags, profile);
+        ArticleData withNonNullSlug = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullTitle = new ArticleData("id", "slug", null, "desc", "body", true, 5, now, now, tags, profile);
+        ArticleData withNonNullTitle = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullDescription = new ArticleData("id", "slug", "title", null, "body", true, 5, now, now, tags, profile);
+        ArticleData withNonNullDescription = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullBody = new ArticleData("id", "slug", "title", "desc", null, true, 5, now, now, tags, profile);
+        ArticleData withNonNullBody = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullCreatedAt = new ArticleData("id", "slug", "title", "desc", "body", true, 5, null, now, tags, profile);
+        ArticleData withNonNullCreatedAt = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullUpdatedAt = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, null, tags, profile);
+        ArticleData withNonNullUpdatedAt = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullTags = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, null, profile);
+        ArticleData withNonNullTags = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        ArticleData withNullProfile = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, null);
+        ArticleData withNonNullProfile = new ArticleData("id", "slug", "title", "desc", "body", true, 5, now, now, tags, profile);
+
+        assertNotEquals(withNullId, withNonNullId);
+        assertNotEquals(withNullSlug, withNonNullSlug);
+        assertNotEquals(withNullTitle, withNonNullTitle);
+        assertNotEquals(withNullDescription, withNonNullDescription);
+        assertNotEquals(withNullBody, withNonNullBody);
+        assertNotEquals(withNullCreatedAt, withNonNullCreatedAt);
+        assertNotEquals(withNullUpdatedAt, withNonNullUpdatedAt);
+        assertNotEquals(withNullTags, withNonNullTags);
+        assertNotEquals(withNullProfile, withNonNullProfile);
+    }
+
+    @Test
+    void shouldTestGetCursorMethod() {
+        DateTime updatedAt = DateTime.now();
+        ArticleData articleData = new ArticleData("id", "slug", "title", "desc", "body", true, 5, 
+            DateTime.now(), updatedAt, Arrays.asList("tag"), 
+            new ProfileData("profile-id", "author", "bio", "image", false));
+
+        assertNotNull(articleData.getCursor());
+        assertEquals(updatedAt, articleData.getCursor().getData());
+    }
+
+    @Test
+    void shouldTestGetCursorWithNullUpdatedAt() {
+        ArticleData articleData = new ArticleData("id", "slug", "title", "desc", "body", true, 5, 
+            DateTime.now(), null, Arrays.asList("tag"), 
+            new ProfileData("profile-id", "author", "bio", "image", false));
+
+        assertNotNull(articleData.getCursor());
+        assertNull(articleData.getCursor().getData());
+    }
 }
