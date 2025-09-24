@@ -388,4 +388,45 @@ public class ArticleQueryServiceTest extends DbTestBase {
     Assertions.assertFalse(articleData.isFavorited());
     Assertions.assertEquals(articleData.getFavoritesCount(), 0);
   }
+
+  @Test
+  public void should_handle_user_feed_cursor_with_exact_limit_boundary() {
+    User anotherUser = new User("other@email.com", "other", "123", "", "");
+    userRepository.save(anotherUser);
+
+    FollowRelation followRelation = new FollowRelation(anotherUser.getId(), user.getId());
+    userRepository.saveRelation(followRelation);
+
+    for (int i = 0; i < 3; i++) {
+      Article extraArticle = new Article(
+          "article " + i, "desc", "body", Arrays.asList("test"), user.getId(), new DateTime().minusHours(i + 2));
+      articleRepository.save(extraArticle);
+    }
+
+    CursorPager<ArticleData> userFeed = queryService.findUserFeedWithCursor(
+        anotherUser, new CursorPageParameter<>(null, 4, Direction.NEXT));
+    Assertions.assertEquals(userFeed.getData().size(), 4);
+    Assertions.assertFalse(userFeed.hasNext());
+  }
+
+  @Test
+  public void should_handle_user_feed_cursor_prev_direction_with_limit_exceeded() {
+    User anotherUser = new User("other@email.com", "other", "123", "", "");
+    userRepository.save(anotherUser);
+
+    FollowRelation followRelation = new FollowRelation(anotherUser.getId(), user.getId());
+    userRepository.saveRelation(followRelation);
+
+    for (int i = 0; i < 5; i++) {
+      Article extraArticle = new Article(
+          "article " + i, "desc", "body", Arrays.asList("test"), user.getId(), new DateTime().minusHours(i + 2));
+      articleRepository.save(extraArticle);
+    }
+
+    CursorPager<ArticleData> userFeed = queryService.findUserFeedWithCursor(
+        anotherUser, new CursorPageParameter<>(null, 3, Direction.PREV));
+    Assertions.assertEquals(userFeed.getData().size(), 3);
+    Assertions.assertTrue(userFeed.hasPrevious());
+    Assertions.assertFalse(userFeed.hasNext());
+  }
 }
