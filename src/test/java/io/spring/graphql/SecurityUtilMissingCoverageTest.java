@@ -19,17 +19,19 @@ public class SecurityUtilMissingCoverageTest {
     SecurityContextHolder.clearContext();
   }
 
-
   @Test
   void should_return_empty_when_authentication_is_anonymous() {
     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-    AnonymousAuthenticationToken anonymousAuth = new AnonymousAuthenticationToken(
-        "anonymous", "anonymousUser", java.util.Collections.singletonList(new SimpleGrantedAuthority("ROLE_ANONYMOUS")));
+    AnonymousAuthenticationToken anonymousAuth =
+        new AnonymousAuthenticationToken(
+            "anonymous",
+            "anonymousUser",
+            java.util.Collections.singletonList(new SimpleGrantedAuthority("ROLE_ANONYMOUS")));
     securityContext.setAuthentication(anonymousAuth);
     SecurityContextHolder.setContext(securityContext);
-    
+
     Optional<User> result = SecurityUtil.getCurrentUser();
-    
+
     assertThat(result).isEmpty();
   }
 
@@ -40,9 +42,9 @@ public class SecurityUtilMissingCoverageTest {
     org.mockito.Mockito.when(authentication.getPrincipal()).thenReturn(null);
     securityContext.setAuthentication(authentication);
     SecurityContextHolder.setContext(securityContext);
-    
+
     Optional<User> result = SecurityUtil.getCurrentUser();
-    
+
     assertThat(result).isEmpty();
   }
 
@@ -54,9 +56,9 @@ public class SecurityUtilMissingCoverageTest {
     org.mockito.Mockito.when(authentication.getPrincipal()).thenReturn(user);
     securityContext.setAuthentication(authentication);
     SecurityContextHolder.setContext(securityContext);
-    
+
     Optional<User> result = SecurityUtil.getCurrentUser();
-    
+
     assertThat(result).isPresent();
     assertThat(result.get()).isEqualTo(user);
   }

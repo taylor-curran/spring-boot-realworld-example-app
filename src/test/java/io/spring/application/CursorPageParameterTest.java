@@ -1,7 +1,6 @@
 package io.spring.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.spring.application.CursorPager.Direction;
 import org.joda.time.DateTime;
@@ -106,7 +105,8 @@ public class CursorPageParameterTest {
   @Test
   public void should_work_with_different_cursor_types() {
     // String cursor
-    CursorPageParameter<String> stringParam = new CursorPageParameter<>("string-cursor", 10, Direction.NEXT);
+    CursorPageParameter<String> stringParam =
+        new CursorPageParameter<>("string-cursor", 10, Direction.NEXT);
     assertThat(stringParam.getCursor()).isEqualTo("string-cursor");
 
     CursorPageParameter<Integer> intParam = new CursorPageParameter<>(12345, 15, Direction.PREV);
@@ -136,7 +136,7 @@ public class CursorPageParameterTest {
 
     assertThat(param1).isEqualTo(param2);
     assertThat(param1.hashCode()).isEqualTo(param2.hashCode());
-    
+
     assertThat(param1).isNotEqualTo(param3);
     assertThat(param1).isNotEqualTo(param4);
     assertThat(param1).isNotEqualTo(param5);
@@ -161,7 +161,7 @@ public class CursorPageParameterTest {
   @Test
   public void should_test_equals_reflexivity() {
     CursorPageParameter<String> param = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
-    
+
     assertThat(param).isEqualTo(param);
   }
 
@@ -199,7 +199,7 @@ public class CursorPageParameterTest {
   @Test
   public void should_test_hashcode_consistency() {
     CursorPageParameter<String> param = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
-    
+
     int hash1 = param.hashCode();
     int hash2 = param.hashCode();
     assertThat(hash1).isEqualTo(hash2);
@@ -207,10 +207,14 @@ public class CursorPageParameterTest {
 
   @Test
   public void should_test_equals_with_mixed_null_combinations() {
-    CursorPageParameter<String> paramWithNullCursor = new CursorPageParameter<>(null, 10, Direction.NEXT);
-    CursorPageParameter<String> paramWithCursor = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
-    CursorPageParameter<String> paramWithNullDirection = new CursorPageParameter<>("cursor", 10, null);
-    CursorPageParameter<String> paramWithDirection = new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+    CursorPageParameter<String> paramWithNullCursor =
+        new CursorPageParameter<>(null, 10, Direction.NEXT);
+    CursorPageParameter<String> paramWithCursor =
+        new CursorPageParameter<>("cursor", 10, Direction.NEXT);
+    CursorPageParameter<String> paramWithNullDirection =
+        new CursorPageParameter<>("cursor", 10, null);
+    CursorPageParameter<String> paramWithDirection =
+        new CursorPageParameter<>("cursor", 10, Direction.NEXT);
 
     assertThat(paramWithNullCursor).isNotEqualTo(paramWithCursor);
     assertThat(paramWithCursor).isNotEqualTo(paramWithNullCursor);
@@ -220,10 +224,11 @@ public class CursorPageParameterTest {
 
   @Test
   public void should_test_toString() {
-    CursorPageParameter<String> parameter = new CursorPageParameter<>("test-cursor", 15, Direction.NEXT);
-    
+    CursorPageParameter<String> parameter =
+        new CursorPageParameter<>("test-cursor", 15, Direction.NEXT);
+
     String toString = parameter.toString();
-    
+
     assertThat(toString).isNotNull();
     assertThat(toString).contains("test-cursor");
     assertThat(toString).contains("15");

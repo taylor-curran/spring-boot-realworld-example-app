@@ -18,7 +18,6 @@ import io.spring.core.user.UserRepository;
 import io.spring.graphql.types.ArticlesConnection;
 import io.spring.graphql.types.Profile;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,20 +44,21 @@ public class ArticleDatafetcherMissingMethodsTest {
   void setUp() {
     articleDatafetcher = new ArticleDatafetcher(articleQueryService, userRepository);
     testUser = new User("test@example.com", "testuser", "123", "", "");
-    
+
     ProfileData profileData = new ProfileData("profile-id", "testuser", "bio", "image.jpg", false);
-    testArticleData = new ArticleData(
-        "article-id",
-        "test-slug",
-        "Test Title",
-        "Test Description",
-        "Test Body",
-        false,
-        0,
-        DateTime.now(),
-        DateTime.now(),
-        Arrays.asList("java", "spring"),
-        profileData);
+    testArticleData =
+        new ArticleData(
+            "article-id",
+            "test-slug",
+            "Test Title",
+            "Test Description",
+            "Test Body",
+            false,
+            0,
+            DateTime.now(),
+            DateTime.now(),
+            Arrays.asList("java", "spring"),
+            profileData);
   }
 
   @Test
@@ -66,13 +66,17 @@ public class ArticleDatafetcherMissingMethodsTest {
     when(mockProfile.getUsername()).thenReturn("testuser");
     when(dgsDataFetchingEnvironment.getSource()).thenReturn(mockProfile);
     when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-    
-    CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-        io.spring.application.CursorPager.Direction.NEXT, false);
+
+    CursorPager<ArticleData> mockPager =
+        new CursorPager<>(
+            Arrays.asList(testArticleData),
+            io.spring.application.CursorPager.Direction.NEXT,
+            false);
     when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
         .thenReturn(mockPager);
 
-    DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(10, "1234567890", null, null, dgsDataFetchingEnvironment);
+    DataFetcherResult<ArticlesConnection> result =
+        articleDatafetcher.userFeed(10, "1234567890", null, null, dgsDataFetchingEnvironment);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isNotNull();
@@ -84,13 +88,17 @@ public class ArticleDatafetcherMissingMethodsTest {
     when(mockProfile.getUsername()).thenReturn("testuser");
     when(dgsDataFetchingEnvironment.getSource()).thenReturn(mockProfile);
     when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-    
-    CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-        io.spring.application.CursorPager.Direction.PREV, false);
+
+    CursorPager<ArticleData> mockPager =
+        new CursorPager<>(
+            Arrays.asList(testArticleData),
+            io.spring.application.CursorPager.Direction.PREV,
+            false);
     when(articleQueryService.findUserFeedWithCursor(eq(testUser), any(CursorPageParameter.class)))
         .thenReturn(mockPager);
 
-    DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(null, null, 10, "1234567890", dgsDataFetchingEnvironment);
+    DataFetcherResult<ArticlesConnection> result =
+        articleDatafetcher.userFeed(null, null, 10, "1234567890", dgsDataFetchingEnvironment);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isNotNull();
@@ -101,15 +109,30 @@ public class ArticleDatafetcherMissingMethodsTest {
   void getArticles_should_handle_first_parameter_with_filters() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class)) {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
-      
-      CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-          io.spring.application.CursorPager.Direction.NEXT, false);
-      when(articleQueryService.findRecentArticlesWithCursor(eq("java"), eq("testuser"), eq("favorited-user"), 
-          any(CursorPageParameter.class), eq(testUser)))
+
+      CursorPager<ArticleData> mockPager =
+          new CursorPager<>(
+              Arrays.asList(testArticleData),
+              io.spring.application.CursorPager.Direction.NEXT,
+              false);
+      when(articleQueryService.findRecentArticlesWithCursor(
+              eq("java"),
+              eq("testuser"),
+              eq("favorited-user"),
+              any(CursorPageParameter.class),
+              eq(testUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(
-          10, "1234567890", null, null, "testuser", "favorited-user", "java", dgsDataFetchingEnvironment);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getArticles(
+              10,
+              "1234567890",
+              null,
+              null,
+              "testuser",
+              "favorited-user",
+              "java",
+              dgsDataFetchingEnvironment);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -121,15 +144,19 @@ public class ArticleDatafetcherMissingMethodsTest {
   void getArticles_should_handle_last_parameter_with_before_cursor() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class)) {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
-      
-      CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-          io.spring.application.CursorPager.Direction.PREV, false);
-      when(articleQueryService.findRecentArticlesWithCursor(isNull(), isNull(), isNull(), 
-          any(CursorPageParameter.class), eq(testUser)))
+
+      CursorPager<ArticleData> mockPager =
+          new CursorPager<>(
+              Arrays.asList(testArticleData),
+              io.spring.application.CursorPager.Direction.PREV,
+              false);
+      when(articleQueryService.findRecentArticlesWithCursor(
+              isNull(), isNull(), isNull(), any(CursorPageParameter.class), eq(testUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(
-          null, null, 10, "1234567890", null, null, null, dgsDataFetchingEnvironment);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getArticles(
+              null, null, 10, "1234567890", null, null, null, dgsDataFetchingEnvironment);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -141,17 +168,22 @@ public class ArticleDatafetcherMissingMethodsTest {
   void userFavorites_should_handle_first_parameter_edge_case() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class)) {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
-      
+
       when(mockProfile.getUsername()).thenReturn("testuser");
       when(dgsDataFetchingEnvironment.getSource()).thenReturn(mockProfile);
-      
-      CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-          io.spring.application.CursorPager.Direction.NEXT, false);
-      when(articleQueryService.findRecentArticlesWithCursor(isNull(), isNull(), eq("testuser"), 
-          any(CursorPageParameter.class), eq(testUser)))
+
+      CursorPager<ArticleData> mockPager =
+          new CursorPager<>(
+              Arrays.asList(testArticleData),
+              io.spring.application.CursorPager.Direction.NEXT,
+              false);
+      when(articleQueryService.findRecentArticlesWithCursor(
+              isNull(), isNull(), eq("testuser"), any(CursorPageParameter.class), eq(testUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(10, "1234567890", null, null, dgsDataFetchingEnvironment);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(
+              10, "1234567890", null, null, dgsDataFetchingEnvironment);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -163,17 +195,21 @@ public class ArticleDatafetcherMissingMethodsTest {
   void userFavorites_should_handle_last_parameter_edge_case() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class)) {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
-      
+
       when(mockProfile.getUsername()).thenReturn("testuser");
       when(dgsDataFetchingEnvironment.getSource()).thenReturn(mockProfile);
-      
-      CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-          io.spring.application.CursorPager.Direction.PREV, false);
-      when(articleQueryService.findRecentArticlesWithCursor(isNull(), isNull(), eq("testuser"), 
-          any(CursorPageParameter.class), eq(testUser)))
+
+      CursorPager<ArticleData> mockPager =
+          new CursorPager<>(
+              Arrays.asList(testArticleData),
+              io.spring.application.CursorPager.Direction.PREV,
+              false);
+      when(articleQueryService.findRecentArticlesWithCursor(
+              isNull(), isNull(), eq("testuser"), any(CursorPageParameter.class), eq(testUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(null, null, 5, "1234567890", dgsDataFetchingEnvironment);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(null, null, 5, "1234567890", dgsDataFetchingEnvironment);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -185,17 +221,21 @@ public class ArticleDatafetcherMissingMethodsTest {
   void userArticles_should_handle_first_parameter_edge_case() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class)) {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
-      
+
       when(mockProfile.getUsername()).thenReturn("testuser");
       when(dgsDataFetchingEnvironment.getSource()).thenReturn(mockProfile);
-      
-      CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-          io.spring.application.CursorPager.Direction.NEXT, false);
-      when(articleQueryService.findRecentArticlesWithCursor(isNull(), eq("testuser"), isNull(), 
-          any(CursorPageParameter.class), eq(testUser)))
+
+      CursorPager<ArticleData> mockPager =
+          new CursorPager<>(
+              Arrays.asList(testArticleData),
+              io.spring.application.CursorPager.Direction.NEXT,
+              false);
+      when(articleQueryService.findRecentArticlesWithCursor(
+              isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), eq(testUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(10, "1234567890", null, null, dgsDataFetchingEnvironment);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userArticles(10, "1234567890", null, null, dgsDataFetchingEnvironment);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -207,17 +247,21 @@ public class ArticleDatafetcherMissingMethodsTest {
   void userArticles_should_handle_last_parameter_edge_case() {
     try (MockedStatic<SecurityUtil> securityUtilMock = Mockito.mockStatic(SecurityUtil.class)) {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
-      
+
       when(mockProfile.getUsername()).thenReturn("testuser");
       when(dgsDataFetchingEnvironment.getSource()).thenReturn(mockProfile);
-      
-      CursorPager<ArticleData> mockPager = new CursorPager<>(Arrays.asList(testArticleData), 
-          io.spring.application.CursorPager.Direction.PREV, false);
-      when(articleQueryService.findRecentArticlesWithCursor(isNull(), eq("testuser"), isNull(), 
-          any(CursorPageParameter.class), eq(testUser)))
+
+      CursorPager<ArticleData> mockPager =
+          new CursorPager<>(
+              Arrays.asList(testArticleData),
+              io.spring.application.CursorPager.Direction.PREV,
+              false);
+      when(articleQueryService.findRecentArticlesWithCursor(
+              isNull(), eq("testuser"), isNull(), any(CursorPageParameter.class), eq(testUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(null, null, 5, "1234567890", dgsDataFetchingEnvironment);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userArticles(null, null, 5, "1234567890", dgsDataFetchingEnvironment);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();

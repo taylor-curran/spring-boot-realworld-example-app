@@ -1,7 +1,6 @@
 package io.spring.core.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +43,7 @@ public class UserTest {
   @Test
   public void should_update_user_profile() {
     User user = new User("test@example.com", "testuser", "password", "old bio", "old.jpg");
-    
+
     user.update("new@example.com", "newuser", "newpassword", "new bio", "new.jpg");
 
     assertThat(user.getEmail()).isEqualTo("new@example.com");
@@ -57,7 +56,7 @@ public class UserTest {
   @Test
   public void should_not_update_user_with_null_values() {
     User user = new User("test@example.com", "testuser", "password", "bio", "image.jpg");
-    
+
     user.update(null, null, null, null, null);
 
     assertThat(user.getEmail()).isEqualTo("test@example.com");
@@ -70,7 +69,7 @@ public class UserTest {
   @Test
   public void should_not_update_user_with_empty_values() {
     User user = new User("test@example.com", "testuser", "password", "bio", "image.jpg");
-    
+
     user.update("", "", "", "", "");
 
     assertThat(user.getEmail()).isEqualTo("test@example.com");
@@ -82,7 +81,8 @@ public class UserTest {
 
   @Test
   public void should_handle_long_bio() {
-    String longBio = "This is a very long bio that contains a lot of text to test how the user entity handles longer biographical information that users might want to include in their profiles.";
+    String longBio =
+        "This is a very long bio that contains a lot of text to test how the user entity handles longer biographical information that users might want to include in their profiles.";
     User user = new User("test@example.com", "testuser", "password", longBio, "image.jpg");
 
     assertThat(user.getBio()).isEqualTo(longBio);
@@ -130,9 +130,9 @@ public class UserTest {
   @Test
   public void should_test_toString() {
     User user = new User("test@example.com", "testuser", "password", "bio", "image.jpg");
-    
+
     String toString = user.toString();
-    
+
     assertThat(toString).isNotNull();
     assertThat(toString).startsWith("io.spring.core.user.User@");
   }
