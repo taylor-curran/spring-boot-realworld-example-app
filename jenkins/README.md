@@ -111,10 +111,10 @@ ARTIFACTORY_URL=https://artifacts.company.com/artifactory
 
 ### 3. Configure Agents
 
-#### Java 11 Agent Requirements
+#### Java 17 Agent Requirements
 ```bash
 # Agent should have:
-- Java 11 JDK
+- Java 17 JDK
 - Gradle (or use wrapper)
 - Cloud Foundry CLI
 - Git
@@ -122,8 +122,8 @@ ARTIFACTORY_URL=https://artifacts.company.com/artifactory
 ```
 
 #### Agent Labels
-- `java11-gradle` - For modern pipeline
-- `java11-gradle-agent` - For legacy jobs
+- `java17-gradle` - For modern pipeline
+- `java17-gradle-agent` - For legacy jobs
 
 ### 4. Cloud Foundry Setup
 
