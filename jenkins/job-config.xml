@@ -79,7 +79,7 @@ This is a freestyle job configuration for teams not yet migrated to Pipeline as 
       </hudson.plugins.git.extensions.impl.CloneOption>
     </extensions>
   </scm>
-  <assignedNode>java11-gradle-agent</assignedNode>
+  <assignedNode>java17-gradle-agent</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
