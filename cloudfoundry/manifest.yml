@@ -8,7 +8,7 @@ applications:
     - java_buildpack
   env:
     JAVA_OPTS: '-Djava.security.egd=file:/dev/./urandom -Xmx768m'
-    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+ } }'
     SPRING_PROFILES_ACTIVE: 'cloud'
     JWT_SECRET: 'your-secret-key-here'
   services:
