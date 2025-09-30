@@ -44,7 +44,7 @@ It uses a PostgreSQL database, which can be configured in the `application.prope
 
 # Getting started
 
-You'll need Java 11 installed.
+You'll need Java 17 installed.
 
     ./gradlew bootRun
 
