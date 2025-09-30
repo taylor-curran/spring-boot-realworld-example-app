@@ -41,8 +41,10 @@ public class ArticleFavoriteTest {
 
   @Test
   public void should_create_article_favorite_with_long_ids() {
-    String articleId = "very-long-article-id-that-contains-many-characters-and-should-still-work-properly";
-    String userId = "very-long-user-id-that-contains-many-characters-and-should-still-work-properly";
+    String articleId =
+        "very-long-article-id-that-contains-many-characters-and-should-still-work-properly";
+    String userId =
+        "very-long-user-id-that-contains-many-characters-and-should-still-work-properly";
 
     ArticleFavorite favorite = new ArticleFavorite(articleId, userId);
 
@@ -81,7 +83,7 @@ public class ArticleFavoriteTest {
 
     assertThat(favorite1).isEqualTo(favorite2);
     assertThat(favorite1.hashCode()).isEqualTo(favorite2.hashCode());
-    
+
     assertThat(favorite1).isNotEqualTo(favorite3);
     assertThat(favorite1).isNotEqualTo(favorite4);
     assertThat(favorite1).isNotEqualTo(null);
@@ -98,7 +100,7 @@ public class ArticleFavoriteTest {
 
     assertThat(favorite1).isEqualTo(favorite2);
     assertThat(favorite1.hashCode()).isEqualTo(favorite2.hashCode());
-    
+
     assertThat(favorite1).isNotEqualTo(favorite3);
     assertThat(favorite1).isNotEqualTo(favorite4);
   }
@@ -112,7 +114,7 @@ public class ArticleFavoriteTest {
 
     assertThat(favorite1).isEqualTo(favorite2);
     assertThat(favorite1.hashCode()).isEqualTo(favorite2.hashCode());
-    
+
     assertThat(favorite1).isNotEqualTo(favorite3);
     assertThat(favorite1).isNotEqualTo(favorite4);
   }

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import graphql.execution.DataFetcherResult;
@@ -16,9 +16,12 @@ import io.spring.application.DateTimeCursor;
 import io.spring.application.data.ArticleData;
 import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
-import io.spring.graphql.SecurityUtil;
 import io.spring.graphql.types.ArticlesConnection;
 import io.spring.graphql.types.Profile;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,19 +30,12 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-
 @ExtendWith(MockitoExtension.class)
 public class ArticleDatafetcherSimpleTest {
 
-  @Mock
-  private ArticleQueryService articleQueryService;
+  @Mock private ArticleQueryService articleQueryService;
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
   private ArticleDatafetcher articleDatafetcher;
   private User testUser;
@@ -67,19 +63,21 @@ public class ArticleDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(true);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), any(User.class)))
+            eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(10, null, null, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userArticles(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
       assertThat(result.getData().getEdges()).hasSize(2);
       assertThat(result.getData().getPageInfo().isHasNextPage()).isTrue();
-      assertThat((Map<String, Object>) result.getLocalContext()).containsKeys("article1", "article2");
+      assertThat((Map<String, Object>) result.getLocalContext())
+          .containsKeys("article1", "article2");
     }
   }
 
@@ -97,18 +95,24 @@ public class ArticleDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq("java"), eq("author"), eq("favorited"), any(CursorPageParameter.class), any(User.class)))
+            eq("java"),
+            eq("author"),
+            eq("favorited"),
+            any(CursorPageParameter.class),
+            any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(10, null, null, null, "author", "favorited", "java", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getArticles(10, null, null, null, "author", "favorited", "java", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
       assertThat(result.getData().getEdges()).hasSize(1);
-      assertThat(result.getData().getEdges().get(0).getNode().getSlug()).isEqualTo("filtered-article");
+      assertThat(result.getData().getEdges().get(0).getNode().getSlug())
+          .isEqualTo("filtered-article");
       assertThat((Map<String, Object>) result.getLocalContext()).containsKey("filtered-article");
     }
   }
@@ -129,18 +133,20 @@ public class ArticleDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
+            eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(10, null, null, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
       assertThat(result.getData().getEdges()).hasSize(1);
-      assertThat(result.getData().getEdges().get(0).getNode().getSlug()).isEqualTo("favorite-article");
+      assertThat(result.getData().getEdges().get(0).getNode().getSlug())
+          .isEqualTo("favorite-article");
       assertThat((Map<String, Object>) result.getLocalContext()).containsKey("favorite-article");
     }
   }
@@ -158,13 +164,15 @@ public class ArticleDatafetcherSimpleTest {
     when(mockResult.hasPrevious()).thenReturn(false);
     when(mockResult.hasNext()).thenReturn(false);
 
-    when(articleQueryService.findUserFeedWithCursor(any(User.class), any(CursorPageParameter.class)))
+    when(articleQueryService.findUserFeedWithCursor(
+            any(User.class), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(10, null, null, null, dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getFeed(10, null, null, null, dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -195,12 +203,14 @@ public class ArticleDatafetcherSimpleTest {
     when(articleQueryService.findUserFeedWithCursor(eq(targetUser), any(CursorPageParameter.class)))
         .thenReturn(mockResult);
 
-    DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(10, null, null, null, dfe);
+    DataFetcherResult<ArticlesConnection> result =
+        articleDatafetcher.userFeed(10, null, null, null, dfe);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isNotNull();
     assertThat(result.getData().getEdges()).hasSize(1);
-    assertThat(result.getData().getEdges().get(0).getNode().getSlug()).isEqualTo("user-feed-article");
+    assertThat(result.getData().getEdges().get(0).getNode().getSlug())
+        .isEqualTo("user-feed-article");
     assertThat((Map<String, Object>) result.getLocalContext()).containsKey("user-feed-article");
   }
 
@@ -218,13 +228,14 @@ public class ArticleDatafetcherSimpleTest {
     when(mockResult.hasNext()).thenReturn(false);
 
     when(articleQueryService.findRecentArticlesWithCursor(
-        eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), any(User.class)))
+            eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), any(User.class)))
         .thenReturn(mockResult);
 
     try (MockedStatic<SecurityUtil> securityUtil = mockStatic(SecurityUtil.class)) {
       securityUtil.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(testUser));
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(null, null, 10, "1234567890", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userArticles(null, null, 10, "1234567890", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();

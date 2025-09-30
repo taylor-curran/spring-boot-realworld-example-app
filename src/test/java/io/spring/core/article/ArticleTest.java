@@ -92,10 +92,11 @@ public class ArticleTest {
     Article article = new Article("Title", "desc", "body", duplicateTags, "user-123");
 
     assertThat(article.getTags()).hasSize(3);
-    List<String> tagNames = article.getTags().stream()
-        .map(Tag::getName)
-        .sorted()
-        .collect(java.util.stream.Collectors.toList());
+    List<String> tagNames =
+        article.getTags().stream()
+            .map(Tag::getName)
+            .sorted()
+            .collect(java.util.stream.Collectors.toList());
     assertThat(tagNames).containsExactly("java", "spring", "test");
   }
 
@@ -103,9 +104,12 @@ public class ArticleTest {
   public void should_update_title_and_regenerate_slug() {
     Article article = new Article("Old Title", "desc", "body", Arrays.asList("java"), "user-123");
     DateTime originalUpdatedAt = article.getUpdatedAt();
-    
-    try { Thread.sleep(1); } catch (InterruptedException e) {}
-    
+
+    try {
+      Thread.sleep(1);
+    } catch (InterruptedException e) {
+    }
+
     article.update("New Amazing Title", null, null);
 
     assertThat(article.getTitle()).isEqualTo("New Amazing Title");
@@ -117,9 +121,12 @@ public class ArticleTest {
   public void should_update_description() {
     Article article = new Article("Title", "old desc", "body", Arrays.asList("java"), "user-123");
     DateTime originalUpdatedAt = article.getUpdatedAt();
-    
-    try { Thread.sleep(1); } catch (InterruptedException e) {}
-    
+
+    try {
+      Thread.sleep(1);
+    } catch (InterruptedException e) {
+    }
+
     article.update(null, "new description", null);
 
     assertThat(article.getDescription()).isEqualTo("new description");
@@ -130,9 +137,12 @@ public class ArticleTest {
   public void should_update_body() {
     Article article = new Article("Title", "desc", "old body", Arrays.asList("java"), "user-123");
     DateTime originalUpdatedAt = article.getUpdatedAt();
-    
-    try { Thread.sleep(1); } catch (InterruptedException e) {}
-    
+
+    try {
+      Thread.sleep(1);
+    } catch (InterruptedException e) {
+    }
+
     article.update(null, null, "new body content");
 
     assertThat(article.getBody()).isEqualTo("new body content");
@@ -141,11 +151,15 @@ public class ArticleTest {
 
   @Test
   public void should_update_all_fields() {
-    Article article = new Article("Old Title", "old desc", "old body", Arrays.asList("java"), "user-123");
+    Article article =
+        new Article("Old Title", "old desc", "old body", Arrays.asList("java"), "user-123");
     DateTime originalUpdatedAt = article.getUpdatedAt();
-    
-    try { Thread.sleep(1); } catch (InterruptedException e) {}
-    
+
+    try {
+      Thread.sleep(1);
+    } catch (InterruptedException e) {
+    }
+
     article.update("New Title", "new desc", "new body");
 
     assertThat(article.getTitle()).isEqualTo("New Title");
@@ -159,7 +173,7 @@ public class ArticleTest {
   public void should_not_update_with_empty_strings() {
     Article article = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
     DateTime originalUpdatedAt = article.getUpdatedAt();
-    
+
     article.update("", "", "");
 
     assertThat(article.getTitle()).isEqualTo("Title");
@@ -172,7 +186,7 @@ public class ArticleTest {
   public void should_not_update_with_null_values() {
     Article article = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
     DateTime originalUpdatedAt = article.getUpdatedAt();
-    
+
     article.update(null, null, null);
 
     assertThat(article.getTitle()).isEqualTo("Title");
@@ -185,7 +199,8 @@ public class ArticleTest {
   public void should_test_equals_and_hashcode() {
     Article article1 = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
     Article article2 = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
-    Article article3 = new Article("Different Title", "desc", "body", Arrays.asList("java"), "user-123");
+    Article article3 =
+        new Article("Different Title", "desc", "body", Arrays.asList("java"), "user-123");
 
     assertThat(article1).isNotEqualTo(article2); // Different IDs
     assertThat(article1).isNotEqualTo(article3);
@@ -197,17 +212,18 @@ public class ArticleTest {
   @Test
   public void should_handle_equals_edge_cases() {
     Article article = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
-    
+
     assertThat(article).isEqualTo(article);
     assertThat(article).isNotEqualTo(null);
     assertThat(article).isNotEqualTo("not an Article");
-    
-    Article differentIdArticle = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
+
+    Article differentIdArticle =
+        new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
     assertThat(article).isNotEqualTo(differentIdArticle);
-    
+
     Article nullIdArticle = new Article();
     Article anotherNullIdArticle = new Article();
-    
+
     assertThat(nullIdArticle).isEqualTo(anotherNullIdArticle);
     assertThat(nullIdArticle).isNotEqualTo(article);
     assertThat(article).isNotEqualTo(nullIdArticle);
@@ -216,24 +232,25 @@ public class ArticleTest {
   @Test
   public void should_handle_hashcode_consistency() {
     Article article = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
-    
+
     int hashCode1 = article.hashCode();
     int hashCode2 = article.hashCode();
-    
+
     assertThat(hashCode1).isEqualTo(hashCode2);
-    
-    Article differentIdArticle = new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
+
+    Article differentIdArticle =
+        new Article("Title", "desc", "body", Arrays.asList("java"), "user-123");
     assertThat(article.hashCode()).isNotEqualTo(differentIdArticle.hashCode());
   }
 
   @Test
   public void should_handle_hashcode_with_null_id() {
     Article nullIdArticle = new Article();
-    
+
     int hashCode = nullIdArticle.hashCode();
     int hashCode2 = nullIdArticle.hashCode();
     assertThat(hashCode).isEqualTo(hashCode2);
-    
+
     Article anotherNullIdArticle = new Article();
     assertThat(nullIdArticle.hashCode()).isEqualTo(anotherNullIdArticle.hashCode());
   }
@@ -274,7 +291,7 @@ public class ArticleTest {
   @Test
   public void should_create_article_with_no_args_constructor() {
     Article article = new Article();
-    
+
     assertThat(article.getId()).isNull();
     assertThat(article.getTitle()).isNull();
     assertThat(article.getDescription()).isNull();

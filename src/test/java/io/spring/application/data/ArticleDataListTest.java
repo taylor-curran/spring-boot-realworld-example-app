@@ -12,14 +12,35 @@ public class ArticleDataListTest {
 
   @Test
   public void should_create_article_data_list_with_articles_and_count() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    List<ArticleData> articles = Arrays.asList(
-        new ArticleData("1", "article-1", "Article 1", "Description 1", "Body 1", false, 0, 
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData),
-        new ArticleData("2", "article-2", "Article 2", "Description 2", "Body 2", true, 5,
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag2"), profileData)
-    );
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    List<ArticleData> articles =
+        Arrays.asList(
+            new ArticleData(
+                "1",
+                "article-1",
+                "Article 1",
+                "Description 1",
+                "Body 1",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag1"),
+                profileData),
+            new ArticleData(
+                "2",
+                "article-2",
+                "Article 2",
+                "Description 2",
+                "Body 2",
+                true,
+                5,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag2"),
+                profileData));
 
     ArticleDataList articleDataList = new ArticleDataList(articles, 2);
 
@@ -48,12 +69,23 @@ public class ArticleDataListTest {
 
   @Test
   public void should_handle_mismatched_count_and_list_size() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    List<ArticleData> articles = Arrays.asList(
-        new ArticleData("1", "article-1", "Article 1", "Description 1", "Body 1", false, 0,
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData)
-    );
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    List<ArticleData> articles =
+        Arrays.asList(
+            new ArticleData(
+                "1",
+                "article-1",
+                "Article 1",
+                "Description 1",
+                "Body 1",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag1"),
+                profileData));
 
     ArticleDataList articleDataList = new ArticleDataList(articles, 10);
 
@@ -63,12 +95,23 @@ public class ArticleDataListTest {
 
   @Test
   public void should_handle_negative_count() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    List<ArticleData> articles = Arrays.asList(
-        new ArticleData("1", "article-1", "Article 1", "Description 1", "Body 1", false, 0,
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData)
-    );
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    List<ArticleData> articles =
+        Arrays.asList(
+            new ArticleData(
+                "1",
+                "article-1",
+                "Article 1",
+                "Description 1",
+                "Body 1",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag1"),
+                profileData));
 
     ArticleDataList articleDataList = new ArticleDataList(articles, -1);
 
@@ -78,12 +121,24 @@ public class ArticleDataListTest {
 
   @Test
   public void should_handle_large_article_list() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    List<ArticleData> largeArticleList = Collections.nCopies(100, 
-        new ArticleData("1", "article-1", "Article 1", "Description 1", "Body 1", false, 0,
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData)
-    );
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    List<ArticleData> largeArticleList =
+        Collections.nCopies(
+            100,
+            new ArticleData(
+                "1",
+                "article-1",
+                "Article 1",
+                "Description 1",
+                "Body 1",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag1"),
+                profileData));
 
     ArticleDataList articleDataList = new ArticleDataList(largeArticleList, 100);
 
@@ -93,13 +148,23 @@ public class ArticleDataListTest {
 
   @Test
   public void should_handle_single_article() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    ArticleData singleArticle = new ArticleData("1", "single-article", "Single Article", 
-                                               "Single Description", "Single Body", true, 3,
-                                               DateTime.now(), DateTime.now(), 
-                                               Arrays.asList("single-tag"), profileData);
-    
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    ArticleData singleArticle =
+        new ArticleData(
+            "1",
+            "single-article",
+            "Single Article",
+            "Single Description",
+            "Single Body",
+            true,
+            3,
+            DateTime.now(),
+            DateTime.now(),
+            Arrays.asList("single-tag"),
+            profileData);
+
     List<ArticleData> articles = Collections.singletonList(singleArticle);
 
     ArticleDataList articleDataList = new ArticleDataList(articles, 1);
@@ -113,13 +178,33 @@ public class ArticleDataListTest {
   public void should_handle_articles_with_different_properties() {
     ProfileData profileData1 = new ProfileData("user1", "user1", "Bio 1", "image1.jpg", false);
     ProfileData profileData2 = new ProfileData("user2", "user2", "Bio 2", "image2.jpg", true);
-    
-    List<ArticleData> articles = Arrays.asList(
-        new ArticleData("1", "favorited-article", "Favorited Article", "Desc", "Body", true, 10,
-                       DateTime.now(), DateTime.now(), Arrays.asList("popular", "trending"), profileData1),
-        new ArticleData("2", "unfavorited-article", "Unfavorited Article", "Desc", "Body", false, 0,
-                       DateTime.now(), DateTime.now(), Collections.emptyList(), profileData2)
-    );
+
+    List<ArticleData> articles =
+        Arrays.asList(
+            new ArticleData(
+                "1",
+                "favorited-article",
+                "Favorited Article",
+                "Desc",
+                "Body",
+                true,
+                10,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("popular", "trending"),
+                profileData1),
+            new ArticleData(
+                "2",
+                "unfavorited-article",
+                "Unfavorited Article",
+                "Desc",
+                "Body",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Collections.emptyList(),
+                profileData2));
 
     ArticleDataList articleDataList = new ArticleDataList(articles, 2);
 
@@ -131,12 +216,23 @@ public class ArticleDataListTest {
 
   @Test
   public void should_handle_zero_count_with_articles() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    List<ArticleData> articles = Arrays.asList(
-        new ArticleData("1", "article-1", "Article 1", "Description 1", "Body 1", false, 0,
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData)
-    );
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    List<ArticleData> articles =
+        Arrays.asList(
+            new ArticleData(
+                "1",
+                "article-1",
+                "Article 1",
+                "Description 1",
+                "Body 1",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag1"),
+                profileData));
 
     ArticleDataList articleDataList = new ArticleDataList(articles, 0);
 
@@ -146,12 +242,23 @@ public class ArticleDataListTest {
 
   @Test
   public void should_handle_very_large_count() {
-    ProfileData profileData = new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
-    
-    List<ArticleData> articles = Arrays.asList(
-        new ArticleData("1", "article-1", "Article 1", "Description 1", "Body 1", false, 0,
-                       DateTime.now(), DateTime.now(), Arrays.asList("tag1"), profileData)
-    );
+    ProfileData profileData =
+        new ProfileData("user123", "testuser", "Test bio", "image.jpg", false);
+
+    List<ArticleData> articles =
+        Arrays.asList(
+            new ArticleData(
+                "1",
+                "article-1",
+                "Article 1",
+                "Description 1",
+                "Body 1",
+                false,
+                0,
+                DateTime.now(),
+                DateTime.now(),
+                Arrays.asList("tag1"),
+                profileData));
 
     ArticleDataList articleDataList = new ArticleDataList(articles, Integer.MAX_VALUE);
 

@@ -10,7 +10,6 @@ import graphql.execution.DataFetcherResult;
 import io.spring.application.ArticleQueryService;
 import io.spring.application.CursorPageParameter;
 import io.spring.application.CursorPager;
-import io.spring.application.DateTimeCursor;
 import io.spring.application.data.ArticleData;
 import io.spring.application.data.ProfileData;
 import io.spring.core.user.User;
@@ -49,11 +48,12 @@ public class ArticleDatafetcherLastParameterTest {
       securityUtilMock.when(SecurityUtil::getCurrentUser).thenReturn(Optional.of(currentUser));
 
       CursorPager<ArticleData> mockPager = createMockPager();
-      when(articleQueryService.findUserFeedWithCursor(eq(currentUser), any(CursorPageParameter.class)))
+      when(articleQueryService.findUserFeedWithCursor(
+              eq(currentUser), any(CursorPageParameter.class)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getFeed(
-          null, null, 10, "1672531200000", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getFeed(null, null, 10, "1672531200000", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -72,8 +72,8 @@ public class ArticleDatafetcherLastParameterTest {
     when(articleQueryService.findUserFeedWithCursor(eq(targetUser), any(CursorPageParameter.class)))
         .thenReturn(mockPager);
 
-    DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFeed(
-        null, null, 10, "1672531200000", dfe);
+    DataFetcherResult<ArticlesConnection> result =
+        articleDatafetcher.userFeed(null, null, 10, "1672531200000", dfe);
 
     assertThat(result).isNotNull();
     assertThat(result.getData()).isNotNull();
@@ -93,8 +93,8 @@ public class ArticleDatafetcherLastParameterTest {
               eq(null), eq(null), eq("testuser"), any(CursorPageParameter.class), eq(currentUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userFavorites(
-          null, null, 10, "1672531200000", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userFavorites(null, null, 10, "1672531200000", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -115,8 +115,8 @@ public class ArticleDatafetcherLastParameterTest {
               eq(null), eq("testuser"), eq(null), any(CursorPageParameter.class), eq(currentUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.userArticles(
-          null, null, 10, "1672531200000", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.userArticles(null, null, 10, "1672531200000", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -131,11 +131,16 @@ public class ArticleDatafetcherLastParameterTest {
 
       CursorPager<ArticleData> mockPager = createMockPager();
       when(articleQueryService.findRecentArticlesWithCursor(
-              eq("tag"), eq("author"), eq("favorited"), any(CursorPageParameter.class), eq(currentUser)))
+              eq("tag"),
+              eq("author"),
+              eq("favorited"),
+              any(CursorPageParameter.class),
+              eq(currentUser)))
           .thenReturn(mockPager);
 
-      DataFetcherResult<ArticlesConnection> result = articleDatafetcher.getArticles(
-          null, null, 10, "1672531200000", "author", "favorited", "tag", dfe);
+      DataFetcherResult<ArticlesConnection> result =
+          articleDatafetcher.getArticles(
+              null, null, 10, "1672531200000", "author", "favorited", "tag", dfe);
 
       assertThat(result).isNotNull();
       assertThat(result.getData()).isNotNull();
@@ -143,29 +148,23 @@ public class ArticleDatafetcherLastParameterTest {
   }
 
   private CursorPager<ArticleData> createMockPager() {
-    ProfileData profileData = new ProfileData(
-        "author-id",
-        "testauthor",
-        "Test Bio",
-        "",
-        false);
+    ProfileData profileData = new ProfileData("author-id", "testauthor", "Test Bio", "", false);
 
-    ArticleData articleData = new ArticleData(
-        "article-id",
-        "test-slug",
-        "Test Title",
-        "Test Description",
-        "Test Body",
-        false,
-        0,
-        DateTime.now(),
-        DateTime.now(),
-        Collections.singletonList("tag1"),
-        profileData);
+    ArticleData articleData =
+        new ArticleData(
+            "article-id",
+            "test-slug",
+            "Test Title",
+            "Test Description",
+            "Test Body",
+            false,
+            0,
+            DateTime.now(),
+            DateTime.now(),
+            Collections.singletonList("tag1"),
+            profileData);
 
     return new CursorPager<>(
-        Collections.singletonList(articleData),
-        CursorPager.Direction.NEXT,
-        false);
+        Collections.singletonList(articleData), CursorPager.Direction.NEXT, false);
   }
 }
