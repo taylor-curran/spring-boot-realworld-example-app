@@ -11,6 +11,12 @@ import org.junit.jupiter.api.Test;
 public class AuthorizationServiceTest {
 
   @Test
+  public void should_instantiate_authorization_service() {
+    AuthorizationService service = new AuthorizationService();
+    assertThat(service).isNotNull();
+  }
+
+  @Test
   public void canWriteArticle_should_return_true_when_user_is_article_author() {
     User user = new User("test@example.com", "testuser", "password", "bio", "image");
     Article article = new Article("Test Title", "Test Description", "Test Body", Arrays.asList("tag1"), user.getId());
