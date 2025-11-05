@@ -73,3 +73,11 @@ Use spotless for code format.
 # Help
 
 Please fork and PR to improve the project.
+
+## Verification
+
+This project has been verified to work with the following setup:
+- Java 17 (OpenJDK)
+- Gradle build system
+- PostgreSQL database
+- SonarQube integration for code quality analysis
