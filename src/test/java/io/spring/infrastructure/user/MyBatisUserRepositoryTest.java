@@ -70,4 +70,18 @@ public class MyBatisUserRepositoryTest extends DbTestBase {
     userRepository.removeRelation(followRelation);
     Assertions.assertFalse(userRepository.findRelation(user.getId(), other.getId()).isPresent());
   }
+
+  @Test
+  public void should_not_save_duplicate_follow_relation() {
+    userRepository.save(user);
+    User other = new User("other@example.com", "other", "123", "", "");
+    userRepository.save(other);
+
+    FollowRelation followRelation = new FollowRelation(user.getId(), other.getId());
+    userRepository.saveRelation(followRelation);
+    
+    userRepository.saveRelation(followRelation);
+    
+    Assertions.assertTrue(userRepository.findRelation(user.getId(), other.getId()).isPresent());
+  }
 }
