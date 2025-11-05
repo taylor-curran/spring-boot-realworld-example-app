@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-realworld-app-prod
+  labels:
+    app.kubernetes.io/name: realworld-app
+    app.kubernetes.io/version: "0.0.1-SNAPSHOT"
+    app.kubernetes.io/part-of: realworld-platform
+    environment: production
+    managed-by: openshift
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: realworld-app
+      environment: production
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: realworld-app
+        app.kubernetes.io/version: "0.0.1-SNAPSHOT"
+        app.kubernetes.io/part-of: realworld-platform
+        environment: production
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: realworld-app
+        image: ghcr.io/taylor-curran/spring-boot-realworld-example-app:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "openshift"
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials-prod
+              key: database-url
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials-prod
+              key: database-user
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials-prod
+              key: database-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets-prod
+              key: jwt-secret
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: ["ALL"]
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          timeoutSeconds: 15
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: logs-volume
+          mountPath: /app/logs
+      volumes:
+      - name: tmp-volume
+        emptyDir: {}
+      - name: logs-volume
+        emptyDir: {}

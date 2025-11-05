@@ -1,0 +1,15 @@
+.git
+.gitignore
+README.md
+MODERNIZATION.md
+LICENSE
+*.png
+build/
+.gradle/
+cloudfoundry/
+jenkins/
+.idea/
+*.iml
+target/
+node_modules/
+bin/
