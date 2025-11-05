@@ -31,4 +31,15 @@ public class MyBatisArticleFavoriteRepositoryTest extends DbTestBase {
     articleFavoriteRepository.remove(articleFavorite);
     Assertions.assertFalse(articleFavoriteRepository.find("123", "456").isPresent());
   }
+
+  @Test
+  public void should_not_duplicate_save_existing_favorite() {
+    ArticleFavorite articleFavorite = new ArticleFavorite("123", "456");
+    articleFavoriteRepository.save(articleFavorite);
+    
+    articleFavoriteRepository.save(articleFavorite);
+    
+    Assertions.assertNotNull(
+        articleFavoriteMapper.find(articleFavorite.getArticleId(), articleFavorite.getUserId()));
+  }
 }
