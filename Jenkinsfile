@@ -96,11 +96,12 @@ pipeline {
                 script {
                     withSonarQubeEnv('SonarQube-Server') {
                         sh '''
-                            ./gradlew sonarqube \
+                            ./gradlew test jacocoTestReport sonarqube \
                                 -Dsonar.projectKey=realworld-spring-boot \
                                 -Dsonar.projectName="RealWorld Spring Boot API" \
                                 -Dsonar.projectVersion=${BUILD_VERSION} \
-                                -Dsonar.host.url=${SONAR_HOST}
+                                -Dsonar.host.url=${SONAR_HOST} \
+                                -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
                         '''
                     }
                 }

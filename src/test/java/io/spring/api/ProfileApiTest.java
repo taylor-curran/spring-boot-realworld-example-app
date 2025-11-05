@@ -93,4 +93,117 @@ public class ProfileApiTest extends TestWithCurrentUser {
 
     verify(userRepository).removeRelation(eq(followRelation));
   }
+
+  @Test
+  public void should_get_404_when_profile_not_found() throws Exception {
+    when(profileQueryService.findByUsername(eq("nonexistent"), eq(null)))
+        .thenReturn(Optional.empty());
+
+    RestAssuredMockMvc.when()
+        .get("/profiles/{username}", "nonexistent")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_404_when_follow_user_not_found() throws Exception {
+    when(userRepository.findByUsername(eq("nonexistent")))
+        .thenReturn(Optional.empty());
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .post("/profiles/{username}/follow", "nonexistent")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_404_when_unfollow_user_not_found() throws Exception {
+    when(userRepository.findByUsername(eq("nonexistent")))
+        .thenReturn(Optional.empty());
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .delete("/profiles/{username}/follow", "nonexistent")
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_404_when_unfollow_relation_not_found() throws Exception {
+    when(userRepository.findRelation(eq(user.getId()), eq(anotherUser.getId())))
+        .thenReturn(Optional.empty());
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .delete("/profiles/{username}/follow", anotherUser.getUsername())
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  public void should_get_profile_with_authenticated_user() throws Exception {
+    when(profileQueryService.findByUsername(eq(profileData.getUsername()), eq(user)))
+        .thenReturn(Optional.of(profileData));
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .get("/profiles/{username}", profileData.getUsername())
+        .then()
+        .statusCode(200)
+        .body("profile.username", equalTo(profileData.getUsername()));
+  }
+
+  @Test
+  public void should_follow_user_and_return_updated_profile() throws Exception {
+    ProfileData followedProfileData = new ProfileData(
+        anotherUser.getId(),
+        anotherUser.getUsername(),
+        anotherUser.getBio(),
+        anotherUser.getImage(),
+        true);
+
+    when(profileQueryService.findByUsername(eq(profileData.getUsername()), eq(user)))
+        .thenReturn(Optional.of(followedProfileData));
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .post("/profiles/{username}/follow", anotherUser.getUsername())
+        .then()
+        .statusCode(200)
+        .body("profile.username", equalTo(followedProfileData.getUsername()));
+
+    verify(userRepository).saveRelation(new FollowRelation(user.getId(), anotherUser.getId()));
+  }
+
+  @Test
+  public void should_unfollow_user_and_return_updated_profile() throws Exception {
+    FollowRelation followRelation = new FollowRelation(user.getId(), anotherUser.getId());
+    ProfileData unfollowedProfileData = new ProfileData(
+        anotherUser.getId(),
+        anotherUser.getUsername(),
+        anotherUser.getBio(),
+        anotherUser.getImage(),
+        false);
+
+    when(userRepository.findRelation(eq(user.getId()), eq(anotherUser.getId())))
+        .thenReturn(Optional.of(followRelation));
+    when(profileQueryService.findByUsername(eq(profileData.getUsername()), eq(user)))
+        .thenReturn(Optional.of(unfollowedProfileData));
+
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .delete("/profiles/{username}/follow", anotherUser.getUsername())
+        .then()
+        .statusCode(200)
+        .body("profile.username", equalTo(unfollowedProfileData.getUsername()));
+
+    verify(userRepository).removeRelation(eq(followRelation));
+  }
 }
