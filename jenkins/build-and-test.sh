@@ -13,7 +13,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Build configuration
 GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.daemon=false -Dorg.gradle.parallel=false}"
-JAVA_HOME="${JAVA_HOME:-/usr/lib/jvm/java-11-openjdk}"
+JAVA_HOME="${JAVA_HOME:-/usr/lib/jvm/java-17-openjdk}"
 BUILD_NUMBER="${BUILD_NUMBER:-local}"
 GIT_COMMIT="${GIT_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
 BUILD_VERSION="${BUILD_NUMBER}-${GIT_COMMIT}"
