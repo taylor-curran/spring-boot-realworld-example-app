@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'java11-gradle'
+        label 'java17-gradle'
     }
     
     options {
@@ -12,7 +12,7 @@ pipeline {
     
     environment {
         GRADLE_OPTS = '-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false'
-        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk'
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
         PATH = "${JAVA_HOME}/bin:${PATH}"
         BUILD_VERSION = "${BUILD_NUMBER}-${GIT_COMMIT.substring(0,7)}"
         ARTIFACTORY_URL = 'https://artifacts.company.com/artifactory'
